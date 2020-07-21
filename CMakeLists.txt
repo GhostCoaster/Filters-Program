@@ -12,14 +12,26 @@ add_executable( Filters_Program
 	src/img/formatter.cpp
 	src/img/image.h
 	src/img/image.cpp
-		src/filter/filters/blur.h
-		src/filter/filters/channelRotate.h
-		src/filter/filter.h
-		src/filter/filters/merge.h
-		src/filter/filters/poster.h
-		src/filter/util.h
+	src/filter/filters/blur.h
+	src/filter/filters/channelRotate.h
+	src/filter/filter.h
+	src/filter/filters/merge.h
+	src/filter/filters/poster.h
+	src/filter/util.h
 	src/filter/util.cpp
-		src/filter/parameter.cpp src/filter/parameter.h src/filter/filter.cpp src/commandLine.cpp src/commandLine.h src/filter/filters/blur.cpp src/filter/filters/channelRotate.cpp src/filter/filters/merge.cpp src/filter/filters/poster.cpp src/filter/filters/shred.cpp src/filter/filters/shred.h
-	)
+	src/filter/parameter.cpp
+	src/filter/parameter.h
+	src/filter/filter.cpp
+	src/commandLine.cpp
+	src/commandLine.h
+	src/filter/filters/blur.cpp
+	src/filter/filters/channelRotate.cpp
+	src/filter/filters/merge.cpp
+	src/filter/filters/poster.cpp
+	src/filter/filters/shred.cpp
+	src/filter/filters/shred.h
+	src/filter/filters/shockwave.cpp
+	src/filter/filters/shockwave.h
+)
 
-inlcude(user/CMakeLists.txt)
+include(user/CMakeLists.txt)

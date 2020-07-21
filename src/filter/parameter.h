@@ -9,15 +9,15 @@
 namespace FPP {
 	class Parameter {
 	public:
-		constexpr static int TYPE_INT = 0;
-		constexpr static int TYPE_FLOAT = 1;
-		constexpr static int TYPE_BOOL = 2;
+		enum ParameterType {
+			TYPE_NONE  = -1,
+			TYPE_INT   = 0,
+			TYPE_FLOAT = 1,
+			TYPE_BOOL  = 2
+		};
 
 	private:
-		template<typename T>
-		auto typeParse(char*) -> bool;
-
-		template<> auto Parameter::typeParse<int>(char* input) -> bool {
+		auto parseInt(char* input) -> bool {
 			auto end = static_cast<char*>(nullptr);
 
 			errno = 0;
@@ -31,7 +31,7 @@ namespace FPP {
 			return true;
 		}
 
-		template<> auto Parameter::typeParse<float>(char* input) -> bool {
+		auto parseFloat(char* input) -> bool {
 			auto end = static_cast<char*>(nullptr);
 
 			errno = 0;
@@ -45,7 +45,7 @@ namespace FPP {
 			return true;
 		}
 
-		template<> auto Parameter::typeParse<bool>(char* input) -> bool {
+		auto parseBool(char* input) -> bool {
 			constexpr static char TRUE_STRING[4] = {'t', 'r', 'u', 'e'};
 			constexpr static char FALSE_STRING[5] = {'f', 'a', 'l', 's', 'e'};
 			constexpr static auto trueLength = sizeof(TRUE_STRING) / sizeof(char);
@@ -79,18 +79,18 @@ namespace FPP {
 		}
 
 		constexpr static bool(Parameter::*parserList[])(char*) {
-			&Parameter::typeParse<int>,
-			&Parameter::typeParse<float>,
-			&Parameter::typeParse<bool>
+			&Parameter::parseInt,
+			&Parameter::parseFloat,
+			&Parameter::parseBool
 		};
 
 	private:
-		int type;
+		ParameterType type;
 		void* value;
 
 	public:
 		Parameter();
-		explicit Parameter(int);
+		explicit Parameter(ParameterType);
 
 		~Parameter();
 

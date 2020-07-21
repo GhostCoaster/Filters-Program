@@ -2,7 +2,12 @@
 #include <string>
 #include <filesystem>
 #include "commandLine.h"
+#include "filter/filters/blur.h"
+#include "filter/filters/channelRotate.h"
+#include "filter/filters/merge.h"
+#include "filter/filters/poster.h"
 #include "filter/filters/shred.h"
+#include "filter/filters/shockwave.h"
 
 namespace FPP {
 	Filter CommandLine::filterList[] {
@@ -10,7 +15,8 @@ namespace FPP {
 		channelRotateFilter(),
 		mergeFilter(),
 		posterFilter(),
-		shredFilter()
+		shredFilter(),
+		shockwaveFilter()
 	};
 
 	auto CommandLine::getImage(int numArguments, char** arguments, std::string& errMessage) -> Image {

@@ -4,7 +4,6 @@
 
 #include "../type.h"
 #include <memory>
-#include <libpng16/png.h>
 
 namespace FPP {
 	class Image {

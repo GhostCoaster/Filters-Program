@@ -8,8 +8,10 @@
 #include "../img/image.h"
 
 namespace FPP {
-	class Util {
-	public:
+	namespace Util {
+		template <typename T>
+		auto PI = T(3.141592653589793238462643383279502884);
+
 		struct channelReturn {
 			u8 red;
 			u8 gre;
@@ -17,22 +19,30 @@ namespace FPP {
 			u8 alp;
 		};
 		
-		static auto red(u32) -> u8;
-		static auto gre(u32) -> u8;
-		static auto blu(u32) -> u8;
-		static auto alp(u32) -> u8;
+		extern auto red(u32) -> u8;
+		extern auto gre(u32) -> u8;
+		extern auto blu(u32) -> u8;
+		extern auto alp(u32) -> u8;
 		
-		static auto pix(u8, u8, u8, u8) -> u32;
-		static auto pix(u32) -> channelReturn;
+		extern auto pix(u8, u8, u8, u8) -> u32;
+		extern auto pix(u32) -> channelReturn;
 		
-		static auto pos(u32, u32, u32) -> u32;
+		extern auto pos(u32, u32, u32) -> u32;
 
-		static auto difference(u32, u32) -> u32;
+		extern auto difference(u32, u32) -> u32;
 
-		static auto swapBuffers(Image**, Image**) -> void;
+		extern auto swapBuffers(Image**, Image**) -> void;
 
-		static auto mod(int, unsigned) -> int;
-	};
+		extern auto mod(int, unsigned) -> int;
+
+		auto mix(u32 color0, u32 color1, float distribution) -> u32;
+
+		namespace sample {
+			extern auto at(u32 * src, u32 x, u32 y, u32 width, u32 height, u32 fallbackColor) -> u32;
+			extern auto nearest(u32 * src, float x, float y, u32 width, u32 height, u32 fallbackColor) -> u32;
+			extern auto bilinear(u32 * src, float x, float y, u32 width, u32 height, u32 fallbackColor) -> u32;
+		}
+	}
 }
 
 #endif
