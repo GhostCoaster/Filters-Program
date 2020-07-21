@@ -75,7 +75,7 @@ namespace FPP {
 
 			/* parse the value from command line arguments */
 			if (!(ret[i].*ret[i].parse)(arguments[i + 3])) {
-				return {ret, std::string("parameter number ") + std::to_string(i) + " is malformed"};
+				return {std::move(ret), std::string("parameter number ") + std::to_string(i + 1) + " is malformed"};
 			}
 		}
 

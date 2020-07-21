@@ -48,8 +48,8 @@ namespace FPP {
 		template<> auto Parameter::typeParse<bool>(char* input) -> bool {
 			constexpr static char TRUE_STRING[4] = {'t', 'r', 'u', 'e'};
 			constexpr static char FALSE_STRING[5] = {'f', 'a', 'l', 's', 'e'};
-			constexpr static auto trueLength = sizeof(TRUE_STRING) / sizeof(decltype(TRUE_STRING));
-			constexpr static auto falseLength = sizeof(FALSE_STRING) / sizeof(decltype(FALSE_STRING));
+			constexpr static auto trueLength = sizeof(TRUE_STRING) / sizeof(char);
+			constexpr static auto falseLength = sizeof(FALSE_STRING) / sizeof(char);
 
 			auto isTrue = true;
 			auto isFalse = true;

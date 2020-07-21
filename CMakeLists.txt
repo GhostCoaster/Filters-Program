@@ -22,7 +22,6 @@ add_executable( Filters_Program
 		src/filter/filters/poster.h
 		src/filter/util.h
 	src/filter/util.cpp
-	src/filterException.cpp src/filterException.h
 		src/filter/parameter.cpp src/filter/parameter.h src/filter/filter.cpp src/commandLine.cpp src/commandLine.h src/filter/filters/blur.cpp src/filter/filters/channelRotate.cpp src/filter/filters/merge.cpp src/filter/filters/poster.cpp src/filter/filters/shred.cpp src/filter/filters/shred.h)
 
 target_link_libraries(Filters_Program C:/Users/Emmet/Programming/lib/libpng-1.6.0/lib/libpngstat.lib)

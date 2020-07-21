@@ -2,7 +2,7 @@
 #include "parameter.h"
 
 namespace FPP {
-	Parameter::Parameter() : type(0), value(nullptr), parse(nullptr) {}
+	Parameter::Parameter() : type(-1), value(nullptr), parse(nullptr) {}
 
 	Parameter::Parameter(int type) : type(type), value(nullptr), parse(parserList[type]) {}
 

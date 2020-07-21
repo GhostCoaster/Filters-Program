@@ -5,9 +5,7 @@
 #include <setjmp.h>
 
 #include "image.h"
-#include "../filterException.h"
 
-//#define HAVE_PROTOTYPES
 #include "jpeglib.h"
 
 #include "formatter.h"
