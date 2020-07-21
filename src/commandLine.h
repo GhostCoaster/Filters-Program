@@ -3,10 +3,6 @@
 #define FILTERS_PROGRAM_COMMANDLINE_H
 
 #include "filter/filter.h"
-#include "filter/filters/blur.h"
-#include "filter/filters/channelRotate.h"
-#include "filter/filters/merge.h"
-#include "filter/filters/poster.h"
 
 namespace FPP {
 	class CommandLine {

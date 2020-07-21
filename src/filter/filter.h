@@ -11,16 +11,16 @@ namespace FPP {
 	class Filter {
 	private:
 		const char* name;
-		std::vector<int> paramTypes;
+		std::vector<Parameter::ParameterType> paramTypes;
 
 	public:
 		using FilterFunc = void(*)(Image**, Image**, Parameter*);
 
-		Filter(const char*, std::initializer_list<int>, FilterFunc);
+		Filter(const char*, std::initializer_list<Parameter::ParameterType>, FilterFunc);
 
 		auto getName() -> const char*;
 		auto getNumParams() -> int;
-		auto getParamType(int) -> int;
+		auto getParamType(int) -> Parameter::ParameterType;
 
 		FilterFunc filter;
 	};

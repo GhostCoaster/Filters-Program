@@ -3,10 +3,6 @@
 #include <filesystem>
 
 #include "img/image.h"
-#include "filter/filters/blur.h"
-#include "filter/filters/channelRotate.h"
-#include "filter/filters/merge.h"
-#include "filter/filters/poster.h"
 #include "img/formatter.h"
 #include "commandLine.h"
 
@@ -39,7 +35,7 @@ auto main(int argc, char** argv) -> int {
 
 	filter->filter(&imgPtr, &sheetPtr, parameters.data());
 
-	imgPtr->write(R"(C:\Users\Emmet\PP\PP4\backgroundCORR.png)");
+	imgPtr->write(R"(../imgs/output.png)");
 
 	return 0;
 }

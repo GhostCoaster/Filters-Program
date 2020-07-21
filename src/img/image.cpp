@@ -6,9 +6,9 @@
 
 #include "image.h"
 
+#include "libpng16/png.h"
 #include "jpeglib.h"
 
-#include "formatter.h"
 #include "../filter/util.h"
 
 namespace FPP {
