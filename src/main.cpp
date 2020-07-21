@@ -11,24 +11,26 @@
 #include "commandLine.h"
 
 auto main(int argc, char** argv) -> int {
-	auto [image, errMessage] = FPP::CommandLine::getImage(argc, argv);
+	auto errMessage = std::string("");
+
+	auto image = FPP::CommandLine::getImage(argc, argv, errMessage);
 
 	if (errMessage != "") {
 		std::cout << errMessage << std::endl;
 		return -1;
 	}
 
-	auto [filter, errMessage2] = FPP::CommandLine::getFilter(argc, argv);
+	auto filter = FPP::CommandLine::getFilter(argc, argv, errMessage);
 
-	if (errMessage2 != "") {
-		std::cout << errMessage2 << std::endl;
+	if (errMessage != "") {
+		std::cout << errMessage << std::endl;
 		return -1;
 	}
 
-	auto [parameters, errMessage3] = FPP::CommandLine::getParameters(argc, argv, filter);
+	auto parameters = FPP::CommandLine::getParameters(argc, argv, filter, errMessage);
 
-	if (errMessage3 != "") {
-		std::cout << errMessage3 << std::endl;
+	if (errMessage != "") {
+		std::cout << errMessage << std::endl;
 		return -1;
 	}
 

@@ -15,26 +15,11 @@ namespace FPP {
 		static FPP::Filter filterList[];
 
 	public:
-		struct imageReturn {
-			Image image;
-			std::string errMessage;
-		};
+		static auto getImage(int numArguments, char** arguments, std::string&) -> Image;
 
-		struct filterReturn {
-			Filter* filter;
-			std::string errMessage;
-		};
+		static auto getFilter(int numArguments, char** arguments, std::string&) -> Filter*;
 
-		struct parametersReturn {
-			std::vector<Parameter> parameters;
-			std::string errMessage;
-		};
-
-		static auto getImage(int numArguments, char** arguments) -> imageReturn;
-
-		static auto getFilter(int numArguments, char** arguments) -> filterReturn;
-
-		static auto getParameters(int numArguments, char** arguments, Filter*) -> parametersReturn;
+		static auto getParameters(int numArguments, char** arguments, Filter*, std::string&) -> std::vector<Parameter>;
 	};
 }
 

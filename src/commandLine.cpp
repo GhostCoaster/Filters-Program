@@ -13,37 +13,43 @@ namespace FPP {
 		shredFilter()
 	};
 
-	auto CommandLine::getImage(int numArguments, char** arguments) -> imageReturn {
-		if (numArguments < 2)
-			return {Image::makeEmpty(), "no filepath provided"};
+	auto CommandLine::getImage(int numArguments, char** arguments, std::string& errMessage) -> Image {
+		if (numArguments < 2) {
+			errMessage = "no filepath provided";
+			return Image::makeEmpty();
+		}
 
 		auto path = std::filesystem::path(arguments[1]);
 
-		if (!std::filesystem::exists(path))
-			return {Image::makeEmpty(), "image does not exist"};
+		if (!std::filesystem::exists(path)) {
+			errMessage =  "image does not exist";
+			return Image::makeEmpty();
+		}
 
 		auto pathStr = path.string();
 
 		/* make lowercase extension */
 		auto extension = path.extension().string();
-		for (auto it = extension.begin(); it < extension.end(); ++it) {
-			*it |= 0x20;
-		}
+		for (auto it = extension.begin(); it < extension.end(); ++it) *it |= 0x20;
 
 		auto image = (extension == ".png") ? Image::fromPNG(pathStr.c_str()) :
 		             (extension == ".jpg") ? Image::fromJPG(pathStr.c_str()) :
 		             Image::makeEmpty();
 
 		/* check if extension check worked */
-		if (!image.isValid())
-			return {std::move(image), std::string("extension ") + extension + " is not supported"};
+		if (!image.isValid()) {
+			errMessage =  std::string("extension ") + extension + " is not supported";
+			return image;
+		}
 
-		return {std::move(image), ""};
+		return image;
 	}
 
-	auto CommandLine::getFilter(int numArguments, char** arguments) -> filterReturn {
-		if (numArguments < 3)
-			return {nullptr, "no filter name provided"};
+	auto CommandLine::getFilter(int numArguments, char** arguments, std::string& errMessage) -> Filter* {
+		if (numArguments < 3) {
+			errMessage = "no filter name provided";
+			return nullptr;
+		}
 
 		auto lookFor = arguments[2];
 
@@ -53,16 +59,17 @@ namespace FPP {
 			auto name = filterList[i].getName();
 
 			if (strcmp(name, lookFor) == 0) {
-				return {&filterList[i], ""};
+				return &filterList[i];
 			}
 		}
 
 		/* after loop if we have not returned */
 		/* no filter matches name */
-		return {nullptr, std::string("no filter of name ") + lookFor + " found"};
+		errMessage = std::string("no filter of name ") + lookFor + " found";
+		return nullptr;
 	}
 
-	auto CommandLine::getParameters(int numArguments, char** arguments, Filter* filter) -> parametersReturn {
+	auto CommandLine::getParameters(int numArguments, char** arguments, Filter* filter, std::string& errMessage) -> std::vector<Parameter> {
 		auto numParameters = filter->getNumParams();
 
 		auto ret = std::vector<Parameter>(numParameters);
@@ -75,10 +82,11 @@ namespace FPP {
 
 			/* parse the value from command line arguments */
 			if (!(ret[i].*ret[i].parse)(arguments[i + 3])) {
-				return {std::move(ret), std::string("parameter number ") + std::to_string(i + 1) + " is malformed"};
+				errMessage = std::string("parameter number ") + std::to_string(i + 1) + " is malformed";
+				return ret;
 			}
 		}
 
-		return {std::move(ret), ""};
+		return ret;
 	}
 }
