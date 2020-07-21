@@ -1,10 +1,13 @@
 
-#include "image.h"
-
 #include <iostream>
-
 #include <stdio.h>
-#define HAVE_PROTOTYPES
+#include <memory>
+#include <setjmp.h>
+
+#include "image.h"
+#include "../filterException.h"
+
+//#define HAVE_PROTOTYPES
 #include "jpeglib.h"
 
 #include "formatter.h"
@@ -14,17 +17,21 @@ namespace FPP {
 	Image::Image(u32 width, u32 height, u32* pixels)
 		: width(width), height(height), pixels(pixels) {}
 
+	Image::Image(Image&& other) : width(other.width), height(other.height), pixels(other.pixels) {
+		other.pixels = nullptr;
+	}
+
 	Image::~Image() {
 		delete[] pixels;
 	}
 
-	auto Image::fromPNG(const char* path) -> std::unique_ptr<Image> {
+	auto Image::fromPNG(const char* path) -> Image {
 		auto* file = static_cast<FILE*>(nullptr);
 
 		/* open the file of the image */
 		fopen_s(&file, path, "rb");
 
-		if (!file) throw std::exception(Formatter::format("Filepath ", path, " does not exist"));
+		if (!file) return makeEmpty();
 
 		auto* png = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
 		auto* info = png_create_info_struct(png);
@@ -83,7 +90,7 @@ namespace FPP {
 		png_destroy_read_struct(&png, &info, nullptr);
 		fclose(file);
 
-		return std::make_unique<Image>(width, height, pixels);
+		return Image(width, height, pixels);
 	}
 
 	struct my_error_mgr {
@@ -104,20 +111,16 @@ namespace FPP {
 		longjmp(myerr->setjmp_buffer, 1);
 	}
 	
-	auto Image::fromJPG(const char* path) -> std::unique_ptr<Image> {
+	auto Image::fromJPG(const char* path) -> Image {
 		struct jpeg_decompress_struct cinfo;
 		struct my_error_mgr jerr;
 
 		/* More stuff */
-		FILE* infile;      /* source file */
-		//JSAMPARRAY buffer;      /* Output row buffer */
-		int row_stride;     /* physical row width in output buffer */
+		FILE* file;      /* source file */
 
-		fopen_s(&infile, path, "rb");
+		fopen_s(&file, path, "rb");
 
-		if (!infile) throw std::exception(Formatter::format("Filepath ", path, " does not exist"));
-
-		/* Step 1: allocate and initialize JPEG decompression object */
+		if (!file) return makeEmpty();
 
 		/* We set up the normal JPEG error routines, then override error_exit. */
 		cinfo.err = jpeg_std_error(&jerr.pub);
@@ -126,49 +129,34 @@ namespace FPP {
 		if (setjmp(jerr.setjmp_buffer)) {
 
 			jpeg_destroy_decompress(&cinfo);
-			fclose(infile);
-			return 0;
+			fclose(file);
+
+			return makeEmpty();
 		}
-		/* Now we can initialize the JPEG decompression object. */
+
 		jpeg_create_decompress(&cinfo);
 
-		/* Step 2: specify data source (eg, a file) */
-
-		jpeg_stdio_src(&cinfo, infile);
-
-		/* Step 3: read file parameters with jpeg_read_header() */
+		jpeg_stdio_src(&cinfo, file);
 
 		(void)jpeg_read_header(&cinfo, TRUE);
-		/* Step 4: set parameters for decompression */
-
-		/* In this example, we don't need to change any of the defaults set by
-		 * jpeg_read_header(), so we do nothing here.
-		 */
-
-		 /* Step 5: Start decompressor */
 
 		(void)jpeg_start_decompress(&cinfo);
 
-
 		auto channels = cinfo.output_components;
 		
-		row_stride = cinfo.output_width * channels;
-		/* Make a one-row-high sample array that will go away when done with image */
-		//buffer = (*cinfo.mem->alloc_sarray) ((j_common_ptr)&cinfo, JPOOL_IMAGE, row_stride, 1);
+		auto row_stride = cinfo.output_width * channels;
 
 		auto width = cinfo.output_width;
 		auto height = cinfo.output_height;
-		auto* pixels = new u32[unsigned long long(width) * height];
+		auto* pixels = new u32[u64(width) * height];
 
 		auto counter = 0llu;
-		auto* buffer = new JSAMPROW[1];
-		buffer[0] = new JSAMPLE[row_stride];
-		
-		//step 6, read the image line by line
-		while (cinfo.output_scanline < cinfo.output_height) {
-			jpeg_read_scanlines(&cinfo, buffer, 1);
 
-			auto* row = buffer[0];
+		auto bufferRow = std::unique_ptr<u8>(new u8[row_stride]);
+		auto* row = bufferRow.get();
+
+		while (cinfo.output_scanline < cinfo.output_height) {
+			jpeg_read_scanlines(&cinfo, &row, 1);
 			
 			for (auto i = 0u; i < width; ++i)
 				pixels[i + counter] = Util::pix(row[i * channels], row[i * channels + 1], row[i * channels + 2], 0xff);
@@ -176,19 +164,21 @@ namespace FPP {
 			counter += width;
 		}
 
-		/* cleanup */
 		jpeg_finish_decompress(&cinfo);
+
+		/* cleanup */
 		jpeg_destroy_decompress(&cinfo);
-		fclose(infile);
-		
-		delete[] buffer[0];
-		delete[] buffer;
-		
-		return std::make_unique<Image>(width, height, pixels);
+		fclose(file);
+
+		return Image(width, height, pixels);
 	}
 
-	auto Image::makeSheet(u32 width, u32 height) -> std::unique_ptr<Image> {
-		return std::make_unique<Image>(width, height, new u32[static_cast<unsigned long long>(width) * height]());
+	auto Image::makeSheet(u32 width, u32 height) -> Image {
+		return Image(width, height, new u32[static_cast<unsigned long long>(width) * height]());
+	}
+
+	auto Image::makeEmpty() -> Image {
+		return Image(0, 0, nullptr);
 	}
 
 	auto Image::getWidth() const -> u32 {
@@ -207,8 +197,6 @@ namespace FPP {
 		auto* file = static_cast<FILE*>(nullptr);
 		
 		fopen_s(&file, path, "wb");
-
-		if (!file) throw std::exception(Formatter::format("Filepath ", path, " does not exist"));
 
 		auto* png = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
 		auto* info = png_create_info_struct(png);
@@ -251,5 +239,9 @@ namespace FPP {
 		png_destroy_write_struct(&png, &info);
 
 		fclose(file);
+	}
+
+	auto Image::isValid() -> bool {
+		return pixels != nullptr;
 	}
 }

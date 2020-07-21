@@ -15,11 +15,13 @@ namespace FPP {
 		u32* pixels;
 		
 	public:
-		static auto fromPNG(const char*) -> std::unique_ptr<Image>;
-		static auto fromJPG(const char*) -> std::unique_ptr<Image>;
-		static auto makeSheet(u32, u32) -> std::unique_ptr<Image>;
-		
+		static auto fromPNG(const char*) -> Image;
+		static auto fromJPG(const char*) -> Image;
+		static auto makeSheet(u32, u32) -> Image;
+		static auto makeEmpty() -> Image;
+
 		Image(u32, u32, u32*);
+		Image(Image&&);
 		~Image();
 		
 		auto getWidth() const -> u32;
@@ -28,6 +30,8 @@ namespace FPP {
 		auto getPixels() const -> u32*;
 
 		auto write(const char*) const -> void;
+
+		auto isValid() -> bool;
 	};
 }
 

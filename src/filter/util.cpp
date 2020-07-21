@@ -43,4 +43,18 @@ namespace FPP {
 
 		return u32(abs(red1 - red0) + abs(gre1 - gre0) + abs(blu1 - blu0) + abs(alp1 - alp0));
 	}
+
+	auto Util::swapBuffers(Image** image0, Image** image1) -> void {
+		auto temp = *image0;
+		*image0 = *image1;
+		*image1 = temp;
+	}
+
+	auto Util::mod(int a, unsigned b) -> int {
+		int mod = a % (int)b;
+
+		if (a < 0) mod += b;
+
+		return mod;
+	}
 }

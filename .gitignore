@@ -4,3 +4,6 @@
 *.sln
 *.vcxproj
 *.vcxproj.*
+
+/.idea
+/cmake-build-debug

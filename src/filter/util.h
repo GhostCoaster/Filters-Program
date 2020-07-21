@@ -3,7 +3,9 @@
 #define FPP_UTIL
 
 #include <cstdint>
+#include <exception>
 #include "../type.h"
+#include "../img/image.h"
 
 namespace FPP {
 	class Util {
@@ -26,6 +28,10 @@ namespace FPP {
 		static auto pos(u32, u32, u32) -> u32;
 
 		static auto difference(u32, u32) -> u32;
+
+		static auto swapBuffers(Image**, Image**) -> void;
+
+		static auto mod(int, unsigned) -> int;
 	};
 }
 

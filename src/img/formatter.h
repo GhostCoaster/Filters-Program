@@ -2,7 +2,6 @@
 #ifndef FPP_FORMATTER
 #define FPP_FORMATTER
 
-#include <concepts>
 #include <string>
 
 namespace FPP {
