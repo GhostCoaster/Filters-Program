@@ -6,7 +6,7 @@
 #include "util.h"
 
 namespace FPP {
-	auto Merge::filter(Image* sheet0, Image* sheet1, int radius, int threshold) -> Filter::sheetReturn {
+	auto Merge::filter(Image* sheet0, Image* sheet1, auto radius, int threshold) -> Filter::sheetReturn {
 		const auto width = sheet0->getWidth();
 		const auto height = sheet0->getHeight();
 		auto* pixels0 = sheet0->getPixels();

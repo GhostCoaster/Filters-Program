@@ -29,7 +29,7 @@ namespace FPP {
 			internalString += first;
 			return internalFormat(rest...);
 		}
-		
+
 	public:
 		template<StringLike First, NotEmpty ...Rest>
 		auto static format(First first, Rest ...rest) -> const char* {
