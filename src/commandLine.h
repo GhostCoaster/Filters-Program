@@ -11,15 +11,33 @@
 namespace FPP {
 	class CommandLine {
 	private:
-		static int NUM_FILTERS;
+		using FlagParser = void(CommandLine::*)(int, char**, int, std::string&);
+
 		static FPP::Filter filterList[];
 
+		static char flags[];
+		static FlagParser parsers[];
+
+		std::vector<Image> images;
+		std::vector<Filter*> filters;
+		std::vector<std::vector<Parameter>> parameters;
+
+		auto getImage(int numArguments, char** arguments, std::string&) -> Image;
+
+		auto getFilter(int numArguments, char** arguments, std::string&) -> Filter*;
+
+		auto getParameters(int numArguments, char** arguments, Filter*, std::string&) -> std::vector<Parameter>;
+
 	public:
-		static auto getImage(int numArguments, char** arguments, std::string&) -> Image;
+		CommandLine(int, char**, std::string&);
 
-		static auto getFilter(int numArguments, char** arguments, std::string&) -> Filter*;
+		auto getNumImages() -> int;
+		auto getImage(int) -> Image&;
 
-		static auto getParameters(int numArguments, char** arguments, Filter*, std::string&) -> std::vector<Parameter>;
+		auto getNumFilters() -> int;
+		auto getFilter(int) -> Filter*;
+
+		auto getParameters(int) -> std::vector<Parameter>&;
 	};
 }
 
