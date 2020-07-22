@@ -37,6 +37,11 @@ namespace FPP {
 
 		auto mix(u32 color0, u32 color1, float distribution) -> u32;
 
+		template <size_t N, typename T>
+		constexpr auto size(T (&array)[N]) {
+			return N;
+		}
+
 		namespace sample {
 			extern auto at(u32 * src, u32 x, u32 y, u32 width, u32 height, u32 fallbackColor) -> u32;
 			extern auto nearest(u32 * src, float x, float y, u32 width, u32 height, u32 fallbackColor) -> u32;

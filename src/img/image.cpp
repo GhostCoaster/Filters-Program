@@ -23,11 +23,11 @@ namespace FPP {
 		delete[] pixels;
 	}
 
-	auto Image::fromPNG(const char* path) -> Image {
+	auto Image::fromPNG(std::filesystem::path& path) -> Image {
 		auto* file = static_cast<FILE*>(nullptr);
 
 		/* open the file of the image */
-		fopen_s(&file, path, "rb");
+		_wfopen_s(&file, path.c_str(), L"rb");
 
 		if (!file) return makeEmpty();
 
@@ -109,14 +109,14 @@ namespace FPP {
 		longjmp(myerr->setjmp_buffer, 1);
 	}
 	
-	auto Image::fromJPG(const char* path) -> Image {
+	auto Image::fromJPG(std::filesystem::path& path) -> Image {
 		struct jpeg_decompress_struct cinfo;
 		struct my_error_mgr jerr;
 
 		/* More stuff */
 		FILE* file;      /* source file */
 
-		fopen_s(&file, path, "rb");
+		_wfopen_s(&file, path.c_str(), L"rb");
 
 		if (!file) return makeEmpty();
 
@@ -191,10 +191,10 @@ namespace FPP {
 		return pixels;
 	}
 
-	auto Image::write(const char* path) const -> void {
+	auto Image::write(std::filesystem::path& path) const -> void {
 		auto* file = static_cast<FILE*>(nullptr);
 		
-		fopen_s(&file, path, "wb");
+		_wfopen_s(&file, path.c_str(), L"wb");
 
 		auto* png = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
 		auto* info = png_create_info_struct(png);

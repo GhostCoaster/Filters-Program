@@ -2,8 +2,10 @@
 #ifndef FPP_PNG
 #define FPP_PNG
 
-#include "../type.h"
+#include <filesystem>
 #include <memory>
+
+#include "../type.h"
 
 namespace FPP {
 	class Image {
@@ -14,8 +16,9 @@ namespace FPP {
 		u32* pixels;
 		
 	public:
-		static auto fromPNG(const char*) -> Image;
-		static auto fromJPG(const char*) -> Image;
+		static auto fromPNG(std::filesystem::path&) -> Image;
+		static auto fromJPG(std::filesystem::path&) -> Image;
+
 		static auto makeSheet(u32, u32) -> Image;
 		static auto makeEmpty() -> Image;
 
@@ -28,7 +31,7 @@ namespace FPP {
 		
 		auto getPixels() const -> u32*;
 
-		auto write(const char*) const -> void;
+		auto write(std::filesystem::path&) const -> void;
 
 		auto isValid() -> bool;
 	};
