@@ -11,3 +11,5 @@ cmake-build-release/
 
 imgs/
 user/
+/user
+/user/*
