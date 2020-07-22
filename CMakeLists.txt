@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.16)
 project(Filters_Program C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
-
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}" )
 
 add_executable( Filters_Program
@@ -24,6 +23,6 @@ add_executable( Filters_Program
 	src/filter/filters/poster.cpp
 	src/filter/filters/shred.cpp
 		src/filter/filters/shockwave.cpp
-		src/filter/filters/filters.h src/filter/filters/noise.cpp src/filter/filters/NoiseScale.cpp src/filter/filters/badShlek.cpp)
+		src/filter/filters/filters.h src/filter/filters/noise.cpp src/filter/filters/NoiseScale.cpp src/filter/filters/badShlek.cpp src/filter/filters/sortFilter.cpp)
 
 include(user/CMakeLists.txt)

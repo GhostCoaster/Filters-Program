@@ -25,11 +25,13 @@ namespace FPP {
 		extern auto alp(u32) -> u8;
 		
 		extern auto pix(u8, u8, u8, u8) -> u32;
+		extern auto pix(u8, u8, u8) -> u32;
 		extern auto pix(u32) -> channelReturn;
 		
 		extern auto pos(u32, u32, u32) -> u32;
 
 		extern auto difference(u32, u32) -> u32;
+		extern auto difference(u8, u8, u8, u32) -> u32;
 
 		extern auto swapBuffers(Image**, Image**) -> void;
 
@@ -52,6 +54,8 @@ namespace FPP {
 		extern auto largeBound(int, u32) -> int;
 
 		extern auto matchSize(Image**, Image**) -> void;
+
+		extern auto mode(Image**, Image**, u32*, int, int) -> void;
 
 		template <size_t N, typename T>
 		constexpr auto size(T (&array)[N]) {

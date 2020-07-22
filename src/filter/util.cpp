@@ -24,6 +24,10 @@ namespace FPP::Util {
 		return u32((red << 24) | (gre << 16) | (blu << 8) | alp);
 	}
 
+	auto pix(const u8 red, const u8 gre, const u8 blu) -> u32 {
+		return u32((red << 24) | (gre << 16) | (blu << 8) | 0xff);
+	}
+
 	auto pix(const u32 pixel) -> channelReturn {
 		return channelReturn{
 			red(pixel),
@@ -41,7 +45,13 @@ namespace FPP::Util {
 		auto [red0, gre0, blu0, alp0] = pix(pixel0);
 		auto [red1, gre1, blu1, alp1] = pix(pixel1);
 
-		return u32(abs(red1 - red0) + abs(gre1 - gre0) + abs(blu1 - blu0) + abs(alp1 - alp0));
+		return u32(abs(red1 - red0) + abs(gre1 - gre0) + abs(blu1 - blu0));
+	}
+
+	auto difference(u8 red, u8 gre, u8 blu, u32 pixel) -> u32 {
+		auto [red1, gre1, blu1, alp1] = pix(pixel);
+
+		return u32(abs(red1 - red) + abs(gre1 - gre) + abs(blu1 - blu));
 	}
 
 	auto swapBuffers(Image** image0, Image** image1) -> void {
@@ -112,6 +122,50 @@ namespace FPP::Util {
 
 	auto matchSize(Image** imageFrom, Image** imageTo) -> void {
 		(*imageTo)->resize((*imageFrom)->getWidth(), (*imageFrom)->getHeight());
+	}
+
+	auto mode(Image** imageFrom, Image** imageTo, u32* colors, int numColors, int radius) -> void {
+		auto width = (*imageFrom)->getWidth();
+		auto height = (*imageFrom)->getHeight();
+		auto counts = new u64[numColors];
+
+		auto pixelsFrom = (*imageFrom)->getPixels();
+		auto   pixelsTo = (*  imageTo)->getPixels();
+
+		/* now place back in the colors based on a mode check */
+		for (auto i = 0u; i < width; ++i) {
+			for (auto j = 0u; j < height; ++j) {
+				/* reuse counts for mode check */
+				for (auto i = 0; i < numColors; ++i)
+					counts[i] = 0;
+
+				auto left = Util::smallBound(i - radius);
+				auto right = Util::largeBound(i + radius + 1, width);
+				auto up = Util::smallBound(j - radius);
+				auto down = Util::largeBound(j + radius + 1, height);
+
+				/* count how many of each color is around this pixel */
+				for (auto k = left; k < right; ++k)
+					for (auto l = up; l < down; ++l)
+						++counts[pixelsFrom[Util::pos(k, l, width)] >> 8];
+
+				auto index = 0;
+				auto highestCount = 0;
+
+				/* find the mode of the colors around this pixel */
+				for (auto k = 0; k < numColors; ++k) {
+					if (counts[k] > highestCount) {
+						highestCount = counts[k];
+						index = k;
+					}
+				}
+
+				auto pos = Util::pos(i, j, width);
+				pixelsTo[pos] = (colors[index] & 0xffffff00) | Util::alp(pixelsFrom[pos]);
+			}
+		}
+
+		delete[] counts;
 	}
 
 	namespace sample {

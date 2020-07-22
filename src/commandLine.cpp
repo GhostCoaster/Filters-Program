@@ -22,7 +22,8 @@ namespace FPP {
 			shockwaveFilter(),
 			noiseFilter(),
 			noiseScaleFilter(),
-			badShlek()
+			badShlek(),
+			sortFilter()
 	};
 
 	CommandLine::CommandLine(int numArguments, char** arguments, std::string& errMessage)
