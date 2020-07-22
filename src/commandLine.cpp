@@ -19,7 +19,8 @@ namespace FPP {
 		mergeFilter(),
 		posterFilter(),
 		shredFilter(),
-		shockwaveFilter()
+		shockwaveFilter(),
+		noiseFilter()
 	};
 
 	CommandLine::CommandLine(int numArguments, char** arguments, std::string& errMessage)
@@ -179,7 +180,7 @@ namespace FPP {
 			/* create the parameter of the right type */
 			auto type = filter->getParamType(parameterCount);
 
-			auto parameter = ret.at(parameterCount);
+			auto& parameter = ret.at(parameterCount);
 			parameter = Parameter(type);
 
 			/* parse the value from command line arguments */

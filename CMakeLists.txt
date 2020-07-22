@@ -8,9 +8,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}" )
 add_executable( Filters_Program
 	src/main.cpp
 	src/type.h
-	src/img/formatter.h
-	src/img/formatter.cpp
-	src/img/image.h
+		src/img/image.h
 	src/img/image.cpp
 		src/filter/filter.h
 		src/filter/util.h
@@ -26,6 +24,6 @@ add_executable( Filters_Program
 	src/filter/filters/poster.cpp
 	src/filter/filters/shred.cpp
 		src/filter/filters/shockwave.cpp
-		src/filter/filters/filters.h)
+		src/filter/filters/filters.h src/filter/filters/noise.cpp)
 
 include(user/CMakeLists.txt)

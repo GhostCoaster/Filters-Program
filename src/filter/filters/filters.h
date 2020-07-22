@@ -19,6 +19,8 @@ namespace FPP {
 	extern auto blurFilter() -> Filter;
 
 	extern auto posterFilter() -> Filter;
+
+	extern auto noiseFilter() -> Filter;
 }
 
 #endif //FILTERS_PROGRAM_FILTERS_H

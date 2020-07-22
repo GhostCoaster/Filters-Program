@@ -3,7 +3,6 @@
 #include <filesystem>
 
 #include "img/image.h"
-#include "img/formatter.h"
 #include "commandLine.h"
 
 auto main(int argc, char** argv) -> int {
