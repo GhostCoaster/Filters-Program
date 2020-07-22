@@ -1,8 +1,8 @@
 
-#include "channelRotate.h"
-
 #include <random>
+
 #include "../util.h"
+#include "filters.h"
 
 namespace FPP {
 	auto channelRotateFilter() -> Filter {

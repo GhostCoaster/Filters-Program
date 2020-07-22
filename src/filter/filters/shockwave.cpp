@@ -4,8 +4,9 @@
 
 #include <cmath>
 #include <algorithm>
+
 #include "../util.h"
-#include "shockwave.h"
+#include "filters.h"
 
 namespace FPP {
 	auto shockwaveFilter() -> Filter {

@@ -1,6 +1,6 @@
 
-#include "blur.h"
 #include "../util.h"
+#include "filters.h"
 
 namespace FPP {
 	auto blurFilter() -> Filter {

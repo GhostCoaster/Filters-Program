@@ -12,12 +12,8 @@ add_executable( Filters_Program
 	src/img/formatter.cpp
 	src/img/image.h
 	src/img/image.cpp
-	src/filter/filters/blur.h
-	src/filter/filters/channelRotate.h
-	src/filter/filter.h
-	src/filter/filters/merge.h
-	src/filter/filters/poster.h
-	src/filter/util.h
+		src/filter/filter.h
+		src/filter/util.h
 	src/filter/util.cpp
 	src/filter/parameter.cpp
 	src/filter/parameter.h
@@ -29,9 +25,7 @@ add_executable( Filters_Program
 	src/filter/filters/merge.cpp
 	src/filter/filters/poster.cpp
 	src/filter/filters/shred.cpp
-	src/filter/filters/shred.h
-	src/filter/filters/shockwave.cpp
-	src/filter/filters/shockwave.h
-)
+		src/filter/filters/shockwave.cpp
+		src/filter/filters/filters.h)
 
 include(user/CMakeLists.txt)

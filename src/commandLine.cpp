@@ -2,12 +2,8 @@
 #include <string>
 #include <filesystem>
 #include "commandLine.h"
-#include "filter/filters/blur.h"
-#include "filter/filters/channelRotate.h"
-#include "filter/filters/merge.h"
-#include "filter/filters/poster.h"
-#include "filter/filters/shred.h"
-#include "filter/filters/shockwave.h"
+#include "filter/filters/filters.h"
+#include "filter/util.h"
 
 namespace FPP {
 	CommandLine::flagInfo CommandLine::flags[] {

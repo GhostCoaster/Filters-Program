@@ -1,7 +1,7 @@
 
-#include "merge.h"
-
 #include <random>
+
+#include "filters.h"
 #include "../util.h"
 
 namespace FPP {

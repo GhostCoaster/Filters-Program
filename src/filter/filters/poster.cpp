@@ -1,7 +1,6 @@
 
-#include "../filter.h"
-#include "../../img/image.h"
 #include "../util.h"
+#include "filters.h"
 
 namespace FPP {
 	auto posterFilter() -> Filter {

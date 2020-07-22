@@ -1,9 +1,7 @@
-//
-// Created by Emmet on 7/20/2020.
-//
 
 #include <random>
-#include "shred.h"
+
+#include "filters.h"
 #include "../util.h"
 
 namespace FPP {
