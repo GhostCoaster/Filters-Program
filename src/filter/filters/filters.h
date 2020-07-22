@@ -21,6 +21,8 @@ namespace FPP {
 	extern auto posterFilter() -> Filter;
 
 	extern auto noiseFilter() -> Filter;
+
+	extern auto noiseScaleFilter() -> Filter;
 }
 
 #endif //FILTERS_PROGRAM_FILTERS_H

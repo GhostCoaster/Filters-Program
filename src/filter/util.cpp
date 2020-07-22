@@ -60,11 +60,44 @@ namespace FPP::Util {
 
 	auto mix(u32 color0, u32 color1, float distribution) -> u32 {
 		return pix(
-			u8(red(color0) * distribution + red(color1) * (1.0 - distribution)),
-			u8(gre(color0) * distribution + gre(color1) * (1.0 - distribution)),
-			u8(blu(color0) * distribution + blu(color1) * (1.0 - distribution)),
-			u8(alp(color0) * distribution + alp(color1) * (1.0 - distribution))
+			u8(red(color0) * (1.0 - distribution) + red(color1) * distribution),
+			u8(gre(color0) * (1.0 - distribution) + gre(color1) * distribution),
+			u8(blu(color0) * (1.0 - distribution) + blu(color1) * distribution),
+			u8(alp(color0) * (1.0 - distribution) + alp(color1) * distribution)
 		);
+	}
+
+	auto conformToRange(int val, int low, int high) -> int {
+		if (val < low)
+			val = low;
+		else if (val > high)
+			val = high;
+
+		return val;
+	}
+
+	auto addNoise(u32 pixel, int amount) -> u32 {
+		auto red = conformToRange(Util::red(pixel) + amount, 0x00, 0xff);
+		auto gre = conformToRange(Util::gre(pixel) + amount, 0x00, 0xff);
+		auto blu = conformToRange(Util::blu(pixel) + amount, 0x00, 0xff);
+
+		return Util::pix(red, gre, blu, Util::alp(pixel));
+	}
+
+	auto addNoise(u32 pixel, int amountR, int amountG, int amountB) -> u32 {
+		auto red = conformToRange(Util::red(pixel) + amountR, 0x00, 0xff);
+		auto gre = conformToRange(Util::gre(pixel) + amountG, 0x00, 0xff);
+		auto blu = conformToRange(Util::blu(pixel) + amountB, 0x00, 0xff);
+
+		return Util::pix(red, gre, blu, Util::alp(pixel));
+	}
+
+	auto luminance(u32 pixel) -> int {
+		return Util::red(pixel) + Util::gre(pixel) + Util::blu(pixel);
+	}
+
+	auto interp(float min, float max, float along) -> float {
+		return (max - min) * along + min;
 	}
 
 	namespace sample {

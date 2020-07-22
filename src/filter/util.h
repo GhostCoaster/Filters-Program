@@ -37,6 +37,17 @@ namespace FPP {
 
 		auto mix(u32 color0, u32 color1, float distribution) -> u32;
 
+		extern auto conformToRange(int, int, int) -> int;
+
+		extern auto addNoise(u32, int) -> u32;
+		extern auto addNoise(u32, int, int, int) -> u32;
+
+		constexpr auto MAX_LUMINANCE = 0xff * 3;
+
+		extern auto luminance(u32) -> int;
+
+		extern auto interp(float, float, float) -> float;
+
 		template <size_t N, typename T>
 		constexpr auto size(T (&array)[N]) {
 			return N;

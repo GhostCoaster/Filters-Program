@@ -20,7 +20,8 @@ namespace FPP {
 		posterFilter(),
 		shredFilter(),
 		shockwaveFilter(),
-		noiseFilter()
+		noiseFilter(),
+		noiseScaleFilter()
 	};
 
 	CommandLine::CommandLine(int numArguments, char** arguments, std::string& errMessage)
