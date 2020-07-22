@@ -15,18 +15,15 @@ namespace FPP {
 			/* do horizontal blur
 			 * result is put into sheet1
 			 */
-			for (auto j = 0; j < height; ++j) {
-				for (auto i = 0; i < width; ++i) {
+			for (auto i = 0; i < width; ++i) {
+				auto left = Util::smallBound(i - radius);
+				auto right = Util::largeBound(i + radius + 1, width);
+
+				for (auto j = 0; j < height; ++j) {
 					auto red = 0;
 					auto gre = 0;
 					auto blu = 0;
 					auto alp = 0;
-
-					auto left = i - radius;
-					if (left < 0) left = 0;
-
-					auto right = i + radius + 1;
-					if (right > width) right = width;
 
 					for (auto k = left; k < right; ++k) {
 						auto pixel = pixels0[Util::pos(k, j, width)];
@@ -47,17 +44,14 @@ namespace FPP {
 			 * result is put back into sheet0
 			 */
 			for (auto j = 0; j < height; ++j) {
+				auto up = Util::smallBound(j - radius);
+				auto down = Util::largeBound(j + radius + 1, height);
+
 				for (auto i = 0; i < width; ++i) {
 					auto red = 0;
 					auto gre = 0;
 					auto blu = 0;
 					auto alp = 0;
-
-					auto up = j - radius;
-					if (up < 0) up = 0;
-
-					auto down = j + radius + 1;
-					if (down > height) down = height;
 
 					for (auto k = up; k < down; ++k) {
 						auto pixel = pixels1[Util::pos(i, k, width)];

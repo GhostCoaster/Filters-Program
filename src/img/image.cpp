@@ -179,6 +179,14 @@ namespace FPP {
 		return Image(0, 0, nullptr);
 	}
 
+	auto Image::resize(u32 width, u32 height) -> void {
+		delete[] pixels;
+		this->pixels = new u32[width * height];
+
+		this->width = width;
+		this->height = height;
+	}
+
 	auto Image::getWidth() const -> u32 {
 		return width;
 	}

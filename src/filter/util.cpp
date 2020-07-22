@@ -100,6 +100,20 @@ namespace FPP::Util {
 		return (max - min) * along + min;
 	}
 
+	auto smallBound(int x) -> int {
+		if (x < 0) x = 0;
+		return x;
+	}
+
+	auto largeBound(int x, u32 width) -> int {
+		if (x > width) x = width;
+		return x;
+	}
+
+	auto matchSize(Image** imageFrom, Image** imageTo) -> void {
+		(*imageTo)->resize((*imageFrom)->getWidth(), (*imageFrom)->getHeight());
+	}
+
 	namespace sample {
 		auto at(u32 * src, u32 x, u32 y, u32 width, u32 height, u32 fallbackColor) -> u32 {
 			if (x >= width || y >= height) {

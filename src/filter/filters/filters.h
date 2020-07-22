@@ -23,6 +23,8 @@ namespace FPP {
 	extern auto noiseFilter() -> Filter;
 
 	extern auto noiseScaleFilter() -> Filter;
+
+	extern auto badShlek() -> Filter;
 }
 
 #endif //FILTERS_PROGRAM_FILTERS_H

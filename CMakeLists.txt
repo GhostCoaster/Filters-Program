@@ -24,6 +24,6 @@ add_executable( Filters_Program
 	src/filter/filters/poster.cpp
 	src/filter/filters/shred.cpp
 		src/filter/filters/shockwave.cpp
-		src/filter/filters/filters.h src/filter/filters/noise.cpp src/filter/filters/NoiseScale.cpp)
+		src/filter/filters/filters.h src/filter/filters/noise.cpp src/filter/filters/NoiseScale.cpp src/filter/filters/badShlek.cpp)
 
 include(user/CMakeLists.txt)

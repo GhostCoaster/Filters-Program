@@ -48,6 +48,11 @@ namespace FPP {
 
 		extern auto interp(float, float, float) -> float;
 
+		extern auto smallBound(int) -> int;
+		extern auto largeBound(int, u32) -> int;
+
+		extern auto matchSize(Image**, Image**) -> void;
+
 		template <size_t N, typename T>
 		constexpr auto size(T (&array)[N]) {
 			return N;

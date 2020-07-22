@@ -10,6 +10,8 @@
 namespace FPP {
 	class Image {
 	private:
+		Image(u32, u32, u32*);
+
 		u32 width;
 		u32 height;
 		
@@ -22,10 +24,11 @@ namespace FPP {
 		static auto makeSheet(u32, u32) -> Image;
 		static auto makeEmpty() -> Image;
 
-		Image(u32, u32, u32*);
 		Image(Image&&);
 		~Image();
-		
+
+		auto resize(u32, u32) -> void;
+
 		auto getWidth() const -> u32;
 		auto getHeight() const -> u32;
 		
