@@ -14,16 +14,17 @@ namespace FPP {
 	};
 
 	Filter CommandLine::filterList[] {
-			blurFilter(),
-			channelRotateFilter(),
-			mergeFilter(),
-			posterFilter(),
-			shredFilter(),
-			shockwaveFilter(),
-			noiseFilter(),
-			noiseScaleFilter(),
-			badShlek(),
-			sortFilter()
+		blurFilter(),
+		channelRotateFilter(),
+		mergeFilter(),
+		posterFilter(),
+		shredFilter(),
+		shockwaveFilter(),
+		noiseFilter(),
+		noiseScaleFilter(),
+		badShlek(),
+		sortFilter(),
+		shlek()
 	};
 
 	CommandLine::CommandLine(int numArguments, char** arguments, std::string& errMessage)

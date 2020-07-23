@@ -168,6 +168,17 @@ namespace FPP::Util {
 		delete[] counts;
 	}
 
+	auto copy(Image* from, Image* to) -> void {
+		auto size = from->getWidth() * from->getWidth();
+
+		auto pixelsFrom = from->getPixels();
+		auto pixelsTo = to->getPixels();
+
+		for (auto i = 0; i < size; ++i) {
+			pixelsTo[i] = pixelsFrom[i];
+		}
+	}
+
 	namespace sample {
 		auto at(u32 * src, u32 x, u32 y, u32 width, u32 height, u32 fallbackColor) -> u32 {
 			if (x >= width || y >= height) {

@@ -57,6 +57,8 @@ namespace FPP {
 
 		extern auto mode(Image**, Image**, u32*, int, int) -> void;
 
+		extern auto copy(Image*, Image*) -> void;
+
 		template <size_t N, typename T>
 		constexpr auto size(T (&array)[N]) {
 			return N;

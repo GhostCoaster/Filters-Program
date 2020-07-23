@@ -79,7 +79,7 @@ namespace FPP {
 								count += dist;
 							}
 
-							pixels1[pos] = energy / count;
+							pixels1[pos] = energyPixels[pos] + energy / count;
 						}
 					}
 				});

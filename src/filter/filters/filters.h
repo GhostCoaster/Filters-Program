@@ -27,6 +27,8 @@ namespace FPP {
 	extern auto badShlek() -> Filter;
 
 	extern auto sortFilter() -> Filter;
+
+	extern auto shlek() -> Filter;
 }
 
 #endif //FILTERS_PROGRAM_FILTERS_H
