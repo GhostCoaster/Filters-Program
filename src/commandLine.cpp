@@ -30,22 +30,26 @@ namespace FPP {
 	CommandLine::CommandLine(int numArguments, char** arguments, std::string& errMessage)
 	: images(), filters(), parameters(), output(), suffix() {
 		for (auto i = 1; i < numArguments; ++i) {
-			/* top level arguments must be a flag */
+			/* get the top level argument, usually a flag */
 			auto argument = arguments[i];
-
 			auto flagIndex = getFlag(argument);
 
 			if (flagIndex == NOT_A_FLAG) {
-				errMessage = std::string("expected flag, found ") + argument + " instead";
-				return;
-			}
+				/* special rule for first argument, doesn't have to be the -i flag */
+				if (i == 1) {
+					(this->*flags[0].parser)(numArguments, arguments, i, errMessage);
 
-			/* parse arguments for this flag */
-			(this->*flags[flagIndex].parser)(numArguments, arguments, ++i, errMessage);
+				/* otherwise syntax error, needs a flag */
+				} else {
+					errMessage = std::string("expected flag, found ") + argument + " instead";
+					return;
+				}
 
-			/* handle errors from the parser */
-			if (errMessage != "") {
-				return;
+			/* parse the NEXT element after the flag based on the flag's parser */
+			} else {
+				(this->*flags[flagIndex].parser)(numArguments, arguments, ++i, errMessage);
+
+				if (errMessage != "") return;
 			}
 		}
 

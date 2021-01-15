@@ -17,6 +17,8 @@ namespace FPP {
 		};
 
 	private:
+		using Alloc_Type = long long;
+
 		auto parseInt(char* input) -> bool {
 			auto end = static_cast<char*>(nullptr);
 
@@ -26,7 +28,8 @@ namespace FPP {
 			if (input == end) return false;
 			if (errno != 0) return false;
 
-			value = new int(temp);
+			value = new Alloc_Type();
+			*reinterpret_cast<int*>(value) = temp;
 
 			return true;
 		}
@@ -40,40 +43,35 @@ namespace FPP {
 			if (input == end) return false;
 			if (errno != 0) return false;
 
-			value = new float(temp);
+			value = new Alloc_Type();
+			*reinterpret_cast<float*>(value) = temp;
 
 			return true;
 		}
 
 		auto parseBool(char* input) -> bool {
-			constexpr static char TRUE_STRING[4] = {'t', 'r', 'u', 'e'};
-			constexpr static char FALSE_STRING[5] = {'f', 'a', 'l', 's', 'e'};
-			constexpr static auto trueLength = sizeof(TRUE_STRING) / sizeof(char);
-			constexpr static auto falseLength = sizeof(FALSE_STRING) / sizeof(char);
-
 			auto isTrue = true;
 			auto isFalse = true;
 			auto index = 0;
 
 			/* an empty string is invalid */
-			if (!*input)
-				return false;
+			if (*input == '\0') return false;
 
+			/* nullcheck, make sure to not check past null terminator in "true" and "false" */
+			/* then compare current input character against character in "true" and "false" */
 			while(*input) {
-				if (isTrue)
-					isTrue = index < trueLength && *input == TRUE_STRING[index];
+				if (isTrue) isTrue = "true"[index] != '\0' && (*input | 0x20) == "true"[index];
 
-				if (isFalse)
-					isFalse = index < falseLength && *input == FALSE_STRING[index];
+				if (isFalse) isFalse = "false"[index] != '\0' && (*input | 0x20) == "false"[index];
 
-				if (!isTrue && !isFalse)
-					return false;
+				if (!isTrue && !isFalse) return false;
 
 				++input;
 				++index;
 			}
 
-			value = new bool(isTrue);
+			value = new Alloc_Type();
+			*reinterpret_cast<float*>(value) = isTrue;
 
 			return true;
 		}
@@ -86,7 +84,7 @@ namespace FPP {
 
 	private:
 		ParameterType type;
-		void* value;
+		Alloc_Type* value;
 
 	public:
 		Parameter();
