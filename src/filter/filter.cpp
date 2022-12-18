@@ -20,11 +20,11 @@ namespace FPP {
 		return params.at(index);
 	}
 
-    auto Filter::getParam(std::string & paramName) -> Parameter * {
-        for (auto & param : params) {
-            if (Util::stringEqual(paramName, param.name)) return &param;
+    auto Filter::getParamIndex(std::string & paramName) -> int {
+        for (auto i = 0; i < params.size(); ++i) {
+            if (Util::stringEqual(paramName, params[i].name)) return i;
         }
-        return nullptr;
+        return -1;
     }
 }
 

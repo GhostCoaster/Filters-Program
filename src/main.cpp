@@ -30,13 +30,9 @@ auto main(int argc, char** argv) -> int {
 
 	for (auto i = 0; i < commandLine.getNumImages(); ++i) {
 		auto& image = commandLine.getImage(i);
-
 		auto sheet = FPP::Image::makeSheet(image.getWidth(), image.getHeight());
 
-		auto imgPtr = &image;
-		auto sheetPtr = &sheet;
-
-        auto buffers = FPP::Buffers(imgPtr, sheetPtr);
+        auto buffers = FPP::Buffers(&image, &sheet);
 
 		for (auto j = 0; j < commandLine.getNumFilters(); ++j) {
             commandLine.getFilter(j)->filter(buffers, commandLine.getParams(j));
@@ -47,7 +43,7 @@ auto main(int argc, char** argv) -> int {
 		outputPath.replace_filename(commandLine.getImagePath(i).stem().string() + commandLine.getSuffix());
 		outputPath.replace_extension(".png");
 
-		imgPtr->write(outputPath);
+		buffers.front().write(outputPath);
 	}
 
 	return 0;

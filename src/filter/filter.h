@@ -23,7 +23,7 @@ namespace FPP {
 		auto numParams() -> int;
 
 		auto getParam(int) -> Parameter &;
-        auto getParam(std::string & paramName) -> Parameter *;
+        auto getParamIndex(std::string & paramName) -> int;
 
 		FilterFunc filter;
 	};

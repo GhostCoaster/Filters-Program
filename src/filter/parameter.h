@@ -46,7 +46,7 @@ namespace FPP {
 
 			if (input == end || errno != 0) throw std::exception("malformed int argument");
 
-			return toValue(bound<float>(parsed));
+			return toValue(bound<int>(parsed));
 		}
 
 		auto parseFloat(char * input) -> Value {

@@ -162,6 +162,7 @@ namespace FPP {
                 equalsIndex = (int)(iter - argument);
                 break;
             }
+            ++iter;
         }
 
         if (equalsIndex == -1) {
@@ -185,16 +186,15 @@ namespace FPP {
 	auto CommandLine::getParameters(int numArguments, char ** arguments, int & index, Filter & filter, std::string & errMessage) -> std::vector<Parameter::Value> {
 		auto paramIndex = 0;
 
-		auto valuesList = std::vector<Parameter::Value>();
-        valuesList.reserve(filter.numParams());
+		auto valuesList = std::vector<Parameter::Value>(filter.numParams());
         for (auto i = 0; i < filter.numParams(); ++i) {
-            valuesList.push_back(filter.getParam(i).defaultValue);
+            valuesList[i] = filter.getParam(i).defaultValue;
         }
 
         bool namedMode;
 
 		/* for each parameter */
-		for (; index < numArguments; ++index, ++paramIndex) {
+		for (; index < numArguments; ++index) {
 			auto argument = arguments[index];
 
 			if (getFlag(argument) != NOT_A_FLAG) {
@@ -215,19 +215,20 @@ namespace FPP {
                 return valuesList;
             }
 
-            Parameter * parameter;
             if (param.hasName()) {
-                parameter = filter.getParam(param.name);
-                if (parameter == nullptr) {
+                paramIndex = filter.getParamIndex(param.name);
+                if (paramIndex == -1) {
                     errMessage = std::string("unknown parameter \"") + param.name + "\"";
                     return valuesList;
                 }
-            } else {
-                parameter = &filter.getParam(paramIndex);
             }
 
+            auto parameter = &filter.getParam(paramIndex);
+
+            if (!namedMode) ++paramIndex;
+
             try {
-                valuesList.emplace_back((parameter->*parameter->parse)(argument));
+                valuesList[paramIndex] = (parameter->*parameter->parse)(param.value.data());
             } catch (std::exception & ex) {
                 errMessage = std::string("bad argument for parameter ") + parameter->name + " (" + std::to_string(paramIndex) + ") in filter " + filter.getName() + ": " + ex.what();
                 return valuesList;
