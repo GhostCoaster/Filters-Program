@@ -4,13 +4,16 @@
 
 namespace FPP {
 	auto blurFilter() -> Filter {
-		return Filter("blur", {Parameter::TYPE_INT}, [](Image** image0, Image** image1, Parameter* parameters) {
-			const auto width = (*image0)->getWidth();
-			const auto height = (*image0)->getHeight();
-			auto* pixels0 = (*image0)->getPixels();
-			auto* pixels1 = (*image1)->getPixels();
+        auto parameters = std::vector<Parameter>();
+        parameters.emplace_back(Parameter::TYPE_INT, 10, 0, 1000, "radius", "blur radius");
 
-			auto radius = parameters[0].as<int>(0, 1000, 10);
+		return { "blur", std::move(parameters), [](Buffers & buffers, std::vector<Parameter::Value> & values) {
+			const auto width = buffers.front().getWidth();
+			const auto height = buffers.front().getHeight();
+			auto* pixels0 = buffers.front().getPixels();
+			auto* pixels1 = buffers.back().getPixels();
+
+			auto radius = Parameter::fromValue<int>(values[0]);
 
 			/* do horizontal blur
 			 * result is put into sheet1
@@ -67,6 +70,6 @@ namespace FPP {
 					pixels0[Util::pos(i, j, width)] = Util::pix(red / size, gre / size, blu / size, alp / size);
 				}
 			}
-		});
+		}};
 	}
 }

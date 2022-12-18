@@ -9,16 +9,21 @@
 
 namespace FPP {
 	auto noiseScaleFilter() -> Filter {
-		return Filter("noiseScale", {Parameter::TYPE_INT, Parameter::TYPE_BOOL, Parameter::TYPE_FLOAT, Parameter::TYPE_FLOAT}, [](Image** image0, Image** image1, Parameter* parameters) {
-			const auto width = (*image0)->getWidth();
-			const auto height = (*image0)->getHeight();
-			auto* pixels0 = (*image0)->getPixels();
-			auto* pixels1 = (*image1)->getPixels();
+        auto parameters = std::vector<Parameter>();
+        parameters.emplace_back(Parameter::TYPE_INT, 75, "strength", "how much deviation in color");
+        parameters.emplace_back(Parameter::TYPE_BOOL, false, "monochrome", "prevent noise from changing color of pixel");
+        parameters.emplace_back(Parameter::TYPE_FLOAT, 1.0f, "minScale", "minimum block size at low brightness");
+        parameters.emplace_back(Parameter::TYPE_FLOAT, 16.0f, "maxScale", "maxmimum block size at high brightness");
 
-			const auto strength = parameters[0].as<int>(75);
-			const auto monochrome = parameters[1].as<bool>(false);
-			const auto minScale = parameters[2].as<float>(1.0f);
-			const auto maxScale = parameters[3].as<float>(16.0f);
+        return { "noiseScale", std::move(parameters), [](Buffers & buffers, std::vector<Parameter::Value> & values) {
+            auto [width, height] = buffers.dimensions();
+            auto * pixels0 = buffers.front().getPixels();
+            auto * pixels1 = buffers.back().getPixels();
+
+            auto strength = Parameter::fromValue<int>(values[0]);
+            auto monochrome = Parameter::fromValue<bool>(values[1]);
+            auto minScale = Parameter::fromValue<float>(values[2]);
+            auto maxScale = Parameter::fromValue<float>(values[3]);
 
 			auto engine = std::default_random_engine(std::random_device()());
 			auto distribution = std::uniform_int_distribution<int>(-strength, strength);
@@ -52,6 +57,6 @@ namespace FPP {
 					pixels0[pos] = Util::addNoise(pixel, noiseRed, noiseGre, noiseBlu);
 				}
 			}
-		});
+		}};
 	}
 }

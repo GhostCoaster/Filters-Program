@@ -10,15 +10,20 @@
 
 namespace FPP {
 	auto shockwaveFilter() -> Filter {
-		return Filter("shockwave", { Parameter::TYPE_FLOAT, Parameter::TYPE_FLOAT }, [](Image** srcImage, Image** targetImage, Parameter* parameters) {
-			const auto width  = (*srcImage)->getWidth();
-			const auto height = (*srcImage)->getHeight();
-			const auto src    = (*srcImage)->getPixels();
-			const auto target = (*targetImage)->getPixels();
+		auto parameters = std::vector<Parameter>();
+		parameters.emplace_back(Parameter::TYPE_FLOAT, 7, "count", "Ripple count");
+		parameters.emplace_back(Parameter::TYPE_FLOAT, 35.0f, "mag", "Ripple magnitude");
 
-			/* get parameters */
-			auto rippleCount = parameters[0].as<float>(7);
-			auto magnitude   = parameters[1].as<float>(std::max(width, height) / 35.0);
+		return Filter("shockwave", std::move(parameters), [](
+            Buffers & buffers,
+            std::vector<Parameter::Value> & params
+        ) {
+			auto [width, height] = buffers.dimensions();
+			auto * src = buffers.front().getPixels();
+			auto * target = buffers.back().getPixels();
+
+			auto rippleCount = Parameter::fromValue<float>(params[0]);
+			auto magnitude   = Parameter::fromValue<float>(params[1]);
 
 			struct {
 				double x;
@@ -39,7 +44,7 @@ namespace FPP {
 				}
 			}
 
-			Util::swapBuffers(srcImage, targetImage);
+			buffers.swap();
 		});
 	}
 }

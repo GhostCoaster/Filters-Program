@@ -6,16 +6,20 @@
 
 namespace FPP {
 	auto shredFilter() -> Filter {
-		return Filter("shred", {Parameter::TYPE_INT, Parameter::TYPE_INT, Parameter::TYPE_BOOL}, [](Image** image0, Image** image1, Parameter* parameters) {
-			const auto width = (*image0)->getWidth();
-			const auto height = (*image0)->getHeight();
-			auto* pixels0 = (*image0)->getPixels();
-			auto* pixels1 = (*image1)->getPixels();
+        auto parameters = std::vector<Parameter>();
+        parameters.emplace_back(Parameter::TYPE_INT, 8, 1, 128, "width", "width of each strip");
+        parameters.emplace_back(Parameter::TYPE_INT, 16, 0, 256, "displace", "maximum offset of a strip");
+        parameters.emplace_back(Parameter::TYPE_BOOL, true, "wrap", "strips wrap around the top and bottom");
 
-			/* get parameters */
-			auto stripWidth = parameters[0].as<int>(1, width, 8);
-			auto maxDisplace = parameters[1].as<int>(0, height * 2, height / 8);
-			auto wrap = parameters[2].as<bool>(true);
+		return { "shred", std::move(parameters), [](Buffers & buffers, std::vector<Parameter::Value> & values) {
+            auto [width, height] = buffers.dimensions();
+            auto * pixels0 = buffers.front().getPixels();
+            auto * pixels1 = buffers.back().getPixels();
+
+			/* get params */
+            auto stripWidth = Parameter::fromValue<int>(values[0]);
+            auto maxDisplace = Parameter::fromValue<int>(values[1]);
+            auto wrap = Parameter::fromValue<bool>(values[2]);
 
 			auto engine = std::default_random_engine(std::random_device()());
 			auto distribution = std::uniform_int_distribution<int>(-maxDisplace, maxDisplace);
@@ -42,7 +46,7 @@ namespace FPP {
 				}
 			}
 
-			Util::swapBuffers(image0, image1);
-		});
+			buffers.swap();
+		}};
 	}
 }

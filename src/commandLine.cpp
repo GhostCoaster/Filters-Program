@@ -1,34 +1,23 @@
 
 #include <string>
+#include <string.h>
 #include <filesystem>
 #include "commandLine.h"
-#include "filter/filters/filters.h"
+
 #include "filter/util.h"
+#include "filter/filterList.h"
 
 namespace FPP {
 	CommandLine::flagInfo CommandLine::flags[] {
 		{"-i", &CommandLine::parseImages},
 		{"-f", &CommandLine::parseFilters},
 		{"-s", &CommandLine::parseSuffix},
-		{"-o", &CommandLine::parseOutput}
-	};
-
-	Filter CommandLine::filterList[] {
-		blurFilter(),
-		channelRotateFilter(),
-		mergeFilter(),
-		posterFilter(),
-		shredFilter(),
-		shockwaveFilter(),
-		noiseFilter(),
-		noiseScaleFilter(),
-		badShlek(),
-		sortFilter(),
-		shlek()
+		{"-o", &CommandLine::parseOutput},
+        {"-l", &CommandLine::parseList}
 	};
 
 	CommandLine::CommandLine(int numArguments, char** arguments, std::string& errMessage)
-	: images(), filters(), parameters(), output(), suffix() {
+	: mode(), images(), filters(), params(), output(), suffix() {
 		for (auto i = 1; i < numArguments; ++i) {
 			/* get the top level argument, usually a flag */
 			auto argument = arguments[i];
@@ -53,25 +42,27 @@ namespace FPP {
 			}
 		}
 
-		/* images flag and filters flag must be provided */
-		if (images.size() == 0) {
-			errMessage = "no images provided";
-			return;
-		}
+		/* images flag and filters flag must be provided if not in list mode */
+        if (!mode.showInfo) {
+            if (images.size() == 0) {
+                errMessage = "no images provided";
+                return;
+            }
 
-		if (filters.size() == 0) {
-			errMessage = "no filters provided";
-			return;
-		}
+            if (filters.size() == 0) {
+                errMessage = "no filters provided";
+                return;
+            }
 
-		/* default values for output dir and suffix */
-		if (output == "") {
-			output = imagePaths[0].parent_path();
-		}
+            /* default values for output dir and suffix */
+            if (output.empty()) {
+                output = imagePaths[0].parent_path();
+            }
 
-		if (suffix == "") {
-			suffix = "_CORR";
-		}
+            if (suffix.empty()) {
+                suffix = "_CORR";
+            }
+        }
 	}
 
 	auto CommandLine::parseImages(int numArguments, char** arguments, int& index, std::string& errMessage) -> void {
@@ -130,79 +121,124 @@ namespace FPP {
 	}
 
 	auto CommandLine::parseFilters(int numArguments, char** arguments, int& index, std::string& errMessage) -> void {
-		/* if -f flag is last argument */
+		/* if -f flag is last filterName */
 		if (index == numArguments) {
 			errMessage = "no arguments provided for -f";
 			return;
 		}
 
-		auto argument = arguments[index];
-		auto filter = static_cast<Filter*>(nullptr);
-
-		/* find which filter argument is */
-		for (auto i = 0; i < Util::size(filterList); ++i) {
-			if (strcmp(filterList[i].getName(), argument) == 0) {
-				filter = filterList + i;
-				break;
-			}
-		}
+		auto filterName = std::string(arguments[index]);
+		auto filter = FilterList::getFilter(filterName);
 
 		if (filter == nullptr) {
-			errMessage = std::string("no filter found with name ") + argument;
+			errMessage = std::string("no filter found with name ") + filterName;
 			return;
 		}
 
-		auto tempParameters = getParameters(numArguments, arguments, ++index, filter, errMessage);
+		auto tempParameters = getParameters(numArguments, arguments, ++index, *filter, errMessage);
 
 		/* check any errors caused by getParameters */
-		if (errMessage != "") {
-			return;
-		}
+		if (!errMessage.empty()) return;
 
-		/* add filter and parameters to list */
+		/* add filter and params to list */
 		filters.push_back(filter);
-		parameters.push_back(std::move(tempParameters));
+		params.push_back(std::move(tempParameters));
 	}
 
-	auto CommandLine::getParameters(int numArguments, char** arguments, int &index, Filter* filter, std::string& errMessage) -> std::vector<Parameter> {
-		auto numParameters = filter->getNumParams();
+    struct ParsedParam {
+        std::string name;
+        std::string value;
 
-		auto parameterCount = 0;
+        auto hasName() {
+            return !name.empty();
+        }
+    };
 
-		auto ret = std::vector<Parameter>(numParameters);
+    auto parseParam(char * argument) -> ParsedParam {
+        auto equalsIndex = -1;
+        auto iter = argument;
+        while (*iter != '\0') {
+            if (*iter == '=') {
+                equalsIndex = (int)(iter - argument);
+                break;
+            }
+        }
+
+        if (equalsIndex == -1) {
+            return { "", argument };
+        } else {
+            argument[equalsIndex] = '\0';
+            return { argument, argument + equalsIndex + 1 };
+        }
+    }
+
+    /*
+     * unnamed arguments:
+     * -f myFilter 0 1.3 true
+     *
+     * named arguments:
+     * -f myFilter param0=0 param1=1.3 param2=true
+     *
+     * don't mix, that's just stupid
+     */
+
+	auto CommandLine::getParameters(int numArguments, char ** arguments, int & index, Filter & filter, std::string & errMessage) -> std::vector<Parameter::Value> {
+		auto paramIndex = 0;
+
+		auto valuesList = std::vector<Parameter::Value>();
+        valuesList.reserve(filter.numParams());
+        for (auto i = 0; i < filter.numParams(); ++i) {
+            valuesList.push_back(filter.getParam(i).defaultValue);
+        }
+
+        bool namedMode;
 
 		/* for each parameter */
-		for (; index < numArguments; ++index, ++parameterCount) {
+		for (; index < numArguments; ++index, ++paramIndex) {
 			auto argument = arguments[index];
 
 			if (getFlag(argument) != NOT_A_FLAG) {
 				--index;
-				return ret;
+				return valuesList;
 			}
 
-			if (parameterCount == numParameters) {
-				errMessage = std::string("more parameters than expected in filter ") + filter->getName() + ", expected " + std::to_string(numParameters);
-				return ret;
+			if (paramIndex == filter.numParams()) {
+				errMessage = std::string("more params than expected in filter ") + filter.getName() + ", expected " + std::to_string(filter.numParams());
+				return valuesList;
 			}
 
-			/* create the parameter of the right type */
-			auto type = filter->getParamType(parameterCount);
+            auto param = parseParam(argument);
+            if (paramIndex == 0) {
+                namedMode = param.hasName();
+            } else if (namedMode != param.hasName()) {
+                errMessage = "mix of named and unnamed parameters";
+                return valuesList;
+            }
 
-			auto& parameter = ret.at(parameterCount);
-			parameter = Parameter(type);
+            Parameter * parameter;
+            if (param.hasName()) {
+                parameter = filter.getParam(param.name);
+                if (parameter == nullptr) {
+                    errMessage = std::string("unknown parameter \"") + param.name + "\"";
+                    return valuesList;
+                }
+            } else {
+                parameter = &filter.getParam(paramIndex);
+            }
 
-			/* parse the value from command line arguments */
-			if (!(parameter.*parameter.parse)(argument)) {
-				errMessage = std::string("parameter number ") + std::to_string(parameterCount) + " in filter " + filter->getName() + " is malformed";
-				return ret;
-			}
+            try {
+                valuesList.emplace_back((parameter->*parameter->parse)(argument));
+            } catch (std::exception & ex) {
+                errMessage = std::string("bad argument for parameter ") + parameter->name + " (" + std::to_string(paramIndex) + ") in filter " + filter.getName() + ": " + ex.what();
+                return valuesList;
+            }
 		}
 
-		return ret;
+		return valuesList;
 	}
 
 	auto CommandLine::parseSuffix(int numArguments, char** arguments, int& index, std::string& errMessage) -> void {
-		if (suffix != "") {
+		if (!suffix.empty()) {
 			errMessage = "suffix already set";
 			return;
 		}
@@ -250,6 +286,41 @@ namespace FPP {
 		}
 	}
 
+    auto CommandLine::parseList(int numArguments, char** arguments, int& index, std::string& errMessage) -> void {
+        auto subIndex = 0;
+
+        mode.showInfo = true;
+
+        for (; index < numArguments; ++index, ++subIndex) {
+            auto argument = arguments[index];
+
+            if (getFlag(argument) != NOT_A_FLAG) {
+                --index;
+                return;
+            }
+
+            if (subIndex == 0) {
+                auto filterName = std::string(argument);
+                auto * filter = FilterList::getFilter(filterName);
+
+                if (filter == nullptr) {
+                    errMessage = "no filter by name \"" + filterName + "\"";
+                    return;
+                }
+
+                mode.showFilter = filter;
+
+            } else {
+                errMessage = "unexpected extra arguments for list, please only specify a filter";
+                return;
+            }
+        }
+    }
+
+    auto CommandLine::getMode() -> Mode {
+        return mode;
+    }
+
 	auto CommandLine::getNumImages() -> int {
 		return images.size();
 	}
@@ -270,8 +341,8 @@ namespace FPP {
 		return filters[index];
 	}
 
-	auto CommandLine::getParameters(int index) -> std::vector<Parameter>& {
-		return parameters.at(index);
+	auto CommandLine::getParams(int index) -> std::vector<Parameter::Value>& {
+		return params.at(index);
 	}
 
 	auto CommandLine::getOuput() -> std::filesystem::path {
@@ -286,7 +357,6 @@ namespace FPP {
 		for (auto j = 0; j < Util::size(flags); ++j) {
 			if (strcmp(flags[j].flag, argument) == 0) {
 				return j;
-				break;
 			}
 		}
 

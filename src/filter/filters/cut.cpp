@@ -9,16 +9,20 @@
 #include "filters.h"
 
 namespace FPP {
-	auto badShlek() -> Filter {
-		return Filter("badShlek", {Parameter::TYPE_INT, Parameter::TYPE_INT, Parameter::TYPE_INT}, [](Image** image0, Image** image1, Parameter* parameters) {
-			const auto width = (*image0)->getWidth();
-			const auto height = (*image0)->getHeight();
-			auto* pixels0 = (*image0)->getPixels();
-			auto* pixels1 = (*image1)->getPixels();
+	auto cutFilter() -> Filter {
+        auto parameters = std::vector<Parameter>();
+        parameters.emplace_back(Parameter::TYPE_FLOAT, 0.5f, 0.0f, 1.0f, "width", "percentage of resulting width");
+        parameters.emplace_back(Parameter::TYPE_FLOAT, 0.5f, 0.0f, 1.0f, "height", "percentage of resulting height");
+        parameters.emplace_back(Parameter::TYPE_INT, 1, 5, 32, "radius", "radius of energy function");
 
-			auto newWidth = parameters[0].as<int>(1, width, width / 2);
-			auto newHeight = parameters[1].as<int>(1, height, height / 2);
-			auto radius = parameters[2].as<int>(1, 32, 5);
+		return { "cut", std::move(parameters), [](Buffers & buffers, std::vector<Parameter::Value> & values) {
+			auto [width, height] = buffers.dimensions();
+			auto * pixels0 = buffers.front().getPixels();
+			auto * pixels1 = buffers.back().getPixels();
+
+			auto newWidth = (int)round((float)width * Parameter::fromValue<float>(values[0]));
+			auto newHeight = (int)round((float)height * Parameter::fromValue<float>(values[1]));
+			auto radius = Parameter::fromValue<int>(values[2]);
 
 			auto energySheet = Image::makeSheet(width, height);
 			auto energyPixels = energySheet.getPixels();
@@ -141,9 +145,8 @@ namespace FPP {
 			verticalThread.join();
 			horizontalThread.join();
 
-			///* resize the target image
-			(*image1)->resize(newWidth, newHeight);
-			pixels1 = (*image1)->getPixels();
+            /* prepare target for new size */
+            pixels1 = buffers.back().resize(newWidth, newHeight);
 
 			auto xIndex = 0;
 
@@ -169,8 +172,8 @@ namespace FPP {
 			delete[] verticals;
 			delete[] horizontals;
 
-			Util::matchSize(image1, image0);
-			Util::swapBuffers(image0, image1);
-		});
+			buffers.matchFrontToBack();
+			buffers.swap();
+		}};
 	}
 }

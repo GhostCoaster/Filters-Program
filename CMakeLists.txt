@@ -12,8 +12,7 @@ add_executable( Filters_Program
 	src/filter/filter.h
 	src/filter/util.h
 	src/filter/util.cpp
-	src/filter/parameter.cpp
-	src/filter/parameter.h
+        src/filter/parameter.h
 	src/filter/filter.cpp
 	src/commandLine.cpp
 	src/commandLine.h
@@ -26,10 +25,16 @@ add_executable( Filters_Program
 	src/filter/filters/filters.h
 	src/filter/filters/noise.cpp
 	src/filter/filters/NoiseScale.cpp
-	src/filter/filters/badShlek.cpp
+		src/filter/filters/cut.cpp
 	src/filter/filters/sortFilter.cpp
-	src/filter/filters/shlek.cpp
-	src/filter/filters/shlek.cpp
-		src/filter/filters/shlek.h)
+		src/img/buffers.h
+	src/img/buffers.cpp
+	src/filter/filterList.h
+	src/filter/filterList.cpp
+	src/help.h
+	src/help.cpp
+)
+
+set_target_properties(Filters_Program PROPERTIES OUTPUT_NAME "fpp")
 
 include(user/CMakeLists.txt)

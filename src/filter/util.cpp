@@ -124,20 +124,19 @@ namespace FPP::Util {
 		(*imageTo)->resize((*imageFrom)->getWidth(), (*imageFrom)->getHeight());
 	}
 
-	auto mode(Image** imageFrom, Image** imageTo, u32* colors, int numColors, int radius) -> void {
-		auto width = (*imageFrom)->getWidth();
-		auto height = (*imageFrom)->getHeight();
+	auto mode(Image & imageFrom, Image & imageTo, u32 * colors, int numColors, int radius) -> void {
+		auto width = imageFrom.getWidth();
+		auto height = imageFrom.getHeight();
 		auto counts = new u64[numColors];
 
-		auto pixelsFrom = (*imageFrom)->getPixels();
-		auto   pixelsTo = (*  imageTo)->getPixels();
+		auto pixelsFrom = imageFrom.getPixels();
+		auto   pixelsTo = imageTo.getPixels();
 
 		/* now place back in the colors based on a mode check */
 		for (auto i = 0u; i < width; ++i) {
 			for (auto j = 0u; j < height; ++j) {
 				/* reuse counts for mode check */
-				for (auto i = 0; i < numColors; ++i)
-					counts[i] = 0;
+				for (auto k = 0; k < numColors; ++k) counts[k] = 0;
 
 				auto left = Util::smallBound(i - radius);
 				auto right = Util::largeBound(i + radius + 1, width);
@@ -208,4 +207,14 @@ namespace FPP::Util {
 			);
 		}
 	}
+
+    auto stringEqual(std::string & string0, std::string & string1) -> bool {
+        if (string0.length() != string1.length()) return false;
+
+        for (auto i = 0; i < string0.length(); ++i) {
+            if ((string0[i] | 0x20) != (string1[i] | 0x20)) return false;
+        }
+
+        return true;
+    }
 }

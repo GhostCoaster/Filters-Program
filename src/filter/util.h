@@ -55,7 +55,7 @@ namespace FPP {
 
 		extern auto matchSize(Image**, Image**) -> void;
 
-		extern auto mode(Image**, Image**, u32*, int, int) -> void;
+		extern auto mode(Image &, Image &, u32 *, int, int) -> void;
 
 		extern auto copy(Image*, Image*) -> void;
 
@@ -69,6 +69,8 @@ namespace FPP {
 			extern auto nearest(u32 * src, float x, float y, u32 width, u32 height, u32 fallbackColor) -> u32;
 			extern auto bilinear(u32 * src, float x, float y, u32 width, u32 height, u32 fallbackColor) -> u32;
 		}
+
+        auto stringEqual(std::string &, std::string &) -> bool;
 	}
 }
 

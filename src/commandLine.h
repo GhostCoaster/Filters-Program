@@ -6,6 +6,12 @@
 
 namespace FPP {
 	class CommandLine {
+    public:
+        struct Mode {
+            bool showInfo = false;
+            Filter * showFilter = nullptr;
+        };
+
 	private:
 		using FlagParser = void(CommandLine::*)(int, char**, int&, std::string&);
 
@@ -15,12 +21,14 @@ namespace FPP {
 		};
 
 		static flagInfo flags[];
-		static Filter filterList[];
+
+        Mode mode;
 
 		std::vector<Image> images;
 		std::vector<std::filesystem::path> imagePaths;
+
 		std::vector<Filter*> filters;
-		std::vector<std::vector<Parameter>> parameters;
+		std::vector<std::vector<Parameter::Value>> params;
 		std::filesystem::path output;
 		std::string suffix;
 
@@ -29,9 +37,10 @@ namespace FPP {
 		auto parseFilters(int, char**, int&, std::string&) -> void;
 		auto parseSuffix(int, char**, int&, std::string&) -> void;
 		auto parseOutput(int, char**, int&, std::string&) -> void;
+        auto parseList(int, char**, int&, std::string&) -> void;
 
 		/* sub level functions */
-		auto getParameters(int, char**, int&, Filter*, std::string&) -> std::vector<Parameter>;
+		auto getParameters(int, char **, int &, Filter &, std::string &) -> std::vector<Parameter::Value>;
 
 		constexpr static int NOT_A_FLAG = -1;
 
@@ -40,13 +49,15 @@ namespace FPP {
 	public:
 		CommandLine(int, char**, std::string&);
 
+        auto getMode() -> Mode;
+
 		auto getNumImages() -> int;
 		auto getImage(int) -> Image&;
 		auto getImagePath(int) -> std::filesystem::path&;
 
 		auto getNumFilters() -> int;
 		auto getFilter(int) -> Filter*;
-		auto getParameters(int) -> std::vector<Parameter>&;
+		auto getParams(int) -> std::vector<Parameter::Value>&;
 
 		auto getOuput() -> std::filesystem::path;
 		auto getSuffix() -> std::string&;

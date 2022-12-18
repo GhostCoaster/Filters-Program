@@ -6,21 +6,24 @@
 #include <vector>
 #include "parameter.h"
 #include "../img/image.h"
+#include "../img/buffers.h"
 
 namespace FPP {
 	class Filter {
 	private:
-		const char* name;
-		std::vector<Parameter::ParameterType> paramTypes;
+		std::string name;
+		std::vector<Parameter> params;
 
 	public:
-		using FilterFunc = void(*)(Image**, Image**, Parameter*);
+		using FilterFunc = void(*)(Buffers &, std::vector<Parameter::Value> &);
 
-		Filter(const char*, std::initializer_list<Parameter::ParameterType>, FilterFunc);
+		Filter(std::string &&, std::vector<Parameter> &&, FilterFunc);
 
-		auto getName() -> const char*;
-		auto getNumParams() -> int;
-		auto getParamType(int) -> Parameter::ParameterType;
+		auto getName() -> std::string &;
+		auto numParams() -> int;
+
+		auto getParam(int) -> Parameter &;
+        auto getParam(std::string & paramName) -> Parameter *;
 
 		FilterFunc filter;
 	};

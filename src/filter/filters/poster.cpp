@@ -4,14 +4,17 @@
 
 namespace FPP {
 	auto posterFilter() -> Filter {
-		return Filter("poster", {Parameter::TYPE_INT, Parameter::TYPE_INT}, [](Image** image0, Image** image1, Parameter* parameters) {
-			const auto width = (*image0)->getWidth();
-			const auto height = (*image0)->getHeight();
-			auto* pixels0 = (*image0)->getPixels();
-			auto* pixels1 = (*image1)->getPixels();
+        auto parameters = std::vector<Parameter>();
+        parameters.emplace_back(Parameter::TYPE_INT, 16, 0, 256, "levels", "how many levels of color");
+        parameters.emplace_back(Parameter::TYPE_INT, 3, 0, 40, "radius", "how far away to check for merging");
 
-			auto numColors = parameters[0].as<int>(0, 256, 16);
-			auto radius = parameters[1].as<int>(0, 40, 3);
+        return { "poster", std::move(parameters), [](Buffers & buffers, std::vector<Parameter::Value> & values) {
+            auto [width, height] = buffers.dimensions();
+            auto * pixels0 = buffers.front().getPixels();
+            auto * pixels1 = buffers.back().getPixels();
+
+            auto numColors = Parameter::fromValue<int>(values[0]);
+            auto radius = Parameter::fromValue<int>(values[1]);
 
 			auto counts = new u32[numColors]();
 			auto reds = new u32[numColors]();
@@ -45,13 +48,13 @@ namespace FPP {
 					colors[i] = Util::pix(reds[i] / counts[i], gres[i] / counts[i], blus[i] / counts[i], 0x00);
 			}
 
-			Util::mode(image1, image0, colors, numColors, radius);
+			Util::mode(buffers.back(), buffers.front(), colors, numColors, radius);
 
 			delete[] counts;
 			delete[] reds;
 			delete[] gres;
 			delete[] blus;
 			delete[] colors;
-		});
+		}};
 	}
 }

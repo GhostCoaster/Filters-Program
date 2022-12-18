@@ -6,7 +6,7 @@
 | Flag | Name | Usage |
 |:----:| ---- | ----- |
 |-i    |Image |Any number of strings, each a filepath to an image to be filtered|
-|-f    |Filter|First, the name of the filter, followed by parameters if supported|
+|-f    |Filter|First, the name of the filter, followed by params if supported|
 |-s    |Suffux|Changes the suffix of the output filenames       |
 |-o    |Output|Changes the firectory of the output files       |
 
@@ -16,5 +16,5 @@ Example:
 Tips:
 * The -i flag can be omitted if it is the first argument
 * You can have any number of -f flags
-* Use `true` or `false` or any substring for boolean filter parameters
-* All filter parameters have a default value
+* Use `true` or `false` or any substring for boolean filter params
+* All filter params have a default value

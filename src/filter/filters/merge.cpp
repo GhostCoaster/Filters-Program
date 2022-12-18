@@ -6,14 +6,17 @@
 
 namespace FPP {
 	auto mergeFilter() -> Filter {
-		return Filter("merge", {Parameter::TYPE_INT, Parameter::TYPE_INT}, [](Image** image0, Image** image1, Parameter* parameters) {
-			const auto width = (*image0)->getWidth();
-			const auto height = (*image0)->getHeight();
-			auto* pixels0 = (*image0)->getPixels();
-			auto* pixels1 = (*image1)->getPixels();
+        auto parameters = std::vector<Parameter>();
+        parameters.emplace_back(Parameter::TYPE_INT, 10, 0, 256, "radius", "radius that pixels can merge from");
+        parameters.emplace_back(Parameter::TYPE_INT, 80, 0, 768, "threshold", "difference between pixels required to merge");
 
-			auto radius = parameters[0].as<int>(0, 256, 10);
-			auto threshold = parameters[1].as<int>(0, 768, 80);
+		return Filter("merge", std::move(parameters), [](Buffers & buffers, std::vector<Parameter::Value> & values) {
+            auto [width, height] = buffers.dimensions();
+            auto * pixels0 = buffers.front().getPixels();
+            auto * pixels1 = buffers.back().getPixels();
+
+			auto radius = Parameter::fromValue<int>(values[0]);
+			auto threshold = Parameter::fromValue<int>(values[1]);
 
 			for (auto i = 0; i < width; ++i) {
 				for (auto j = 0; j < height; ++j) {

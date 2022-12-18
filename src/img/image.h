@@ -24,10 +24,13 @@ namespace FPP {
 		static auto makeSheet(u32, u32) -> Image;
 		static auto makeEmpty() -> Image;
 
-		Image(Image&&);
+		Image(Image&&) noexcept;
 		~Image();
 
-		auto resize(u32, u32) -> void;
+        Image(const Image &) = delete;
+        Image & operator=(const Image &) = delete;
+
+		auto resize(u32, u32) -> u32 *;
 
 		auto getWidth() const -> u32;
 		auto getHeight() const -> u32;

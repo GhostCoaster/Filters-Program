@@ -7,11 +7,17 @@
 
 namespace FPP {
 	auto sortFilter() -> Filter {
-		return Filter("sort", {Parameter::TYPE_INT, Parameter::TYPE_INT}, [](Image** image0, Image** image1, Parameter* parameters) {
-			const auto width = (*image0)->getWidth();
-			const auto height = (*image0)->getHeight();
-			auto* pixels0 = (*image0)->getPixels();
-			auto* pixels1 = (*image1)->getPixels();
+        auto parameters = std::vector<Parameter>();
+        parameters.emplace_back(Parameter::TYPE_INT, 80, 0, Util::MAX_LUMINANCE, "threshold", "threshold to combine pixels");
+        parameters.emplace_back(Parameter::TYPE_INT, 1, 0, 32, "radius", "how far away to check for combining");
+
+		return { "sort", std::move(parameters), [](Buffers & buffers, std::vector<Parameter::Value> & values) {
+            auto [width, height] = buffers.dimensions();
+            auto * pixels0 = buffers.front().getPixels();
+            auto * pixels1 = buffers.back().getPixels();
+
+            auto threshold = Parameter::fromValue<int>(values[0]);
+            auto radius = Parameter::fromValue<int>(values[1]);
 
 			/* copy pixels into pixels1 */
 			for (auto i = 0; i < width * height; ++i) {
@@ -39,8 +45,6 @@ namespace FPP {
 				auto average = Util::pix(red / width, gre / width, blu / width);
 				pixels1[Util::pos(0, j, width)] = average;
 			}
-
-			auto threshold = parameters[0].as<int>(0, Util::MAX_LUMINANCE,80);
 
 			auto colors = std::vector<u32>();
 
@@ -97,11 +101,9 @@ namespace FPP {
 				}
 			}
 
-			auto radius = parameters[1].as<int>(0, 32, 1);
+			Util::mode(buffers.front(), buffers.back(), colors.data(), colors.size(), radius);
 
-			Util::mode(image0, image1, colors.data(), colors.size(), radius);
-
-			Util::swapBuffers(image0, image1);
-		});
+			buffers.swap();
+		}};
 	}
 }

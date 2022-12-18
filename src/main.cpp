@@ -1,19 +1,32 @@
 
 #include <iostream>
-#include <filesystem>
 
 #include "img/image.h"
 #include "commandLine.h"
+#include "filter/filterList.h"
+#include "help.h"
 
 auto main(int argc, char** argv) -> int {
+    FPP::FilterList::init();
+
 	auto errMessage = std::string("");
 
 	auto commandLine = FPP::CommandLine(argc, argv, errMessage);
 
-	if (errMessage != "") {
+	if (!errMessage.empty()) {
 		std::cout << errMessage << std::endl;
 		return -1;
 	}
+
+    auto mode = commandLine.getMode();
+    if (mode.showInfo) {
+        if (mode.showFilter == nullptr) {
+            std::cout << FPP::Help::filtersList() << std::endl;
+        } else {
+            std::cout << FPP::Help::prettyFilter(*mode.showFilter) << std::endl;
+        }
+        return 0;
+    }
 
 	for (auto i = 0; i < commandLine.getNumImages(); ++i) {
 		auto& image = commandLine.getImage(i);
@@ -23,11 +36,10 @@ auto main(int argc, char** argv) -> int {
 		auto imgPtr = &image;
 		auto sheetPtr = &sheet;
 
-		for (auto j = 0; j < commandLine.getNumFilters(); ++j) {
-			auto* filter = commandLine.getFilter(j);
-			auto& parameters = commandLine.getParameters(j);
+        auto buffers = FPP::Buffers(imgPtr, sheetPtr);
 
-			filter->filter(&imgPtr, &sheetPtr, parameters.data());
+		for (auto j = 0; j < commandLine.getNumFilters(); ++j) {
+            commandLine.getFilter(j)->filter(buffers, commandLine.getParams(j));
 		}
 
 		auto outputPath = commandLine.getOuput();

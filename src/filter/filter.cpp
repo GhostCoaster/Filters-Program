@@ -1,20 +1,30 @@
 
 #include "filter.h"
 
-namespace FPP {
-	Filter::Filter(const char* name, std::initializer_list<Parameter::ParameterType> paramTypes, FilterFunc filter)
-		: name(name), paramTypes(paramTypes), filter(filter) {}
+#include "util.h"
 
-	auto Filter::getName() -> const char* {
+namespace FPP {
+	Filter::Filter(std::string && name, std::vector<Parameter> && params, FilterFunc filter)
+		: name(name), params(params), filter(filter) {
+    }
+
+	auto Filter::getName() -> std::string & {
 		return name;
 	}
 
-	auto Filter::getNumParams() -> int {
-		return paramTypes.size();
+	auto Filter::numParams() -> int {
+		return (int)params.size();
 	}
 
-	auto Filter::getParamType(int index) -> Parameter::ParameterType {
-		return paramTypes[index];
+	auto Filter::getParam(int index) -> Parameter & {
+		return params.at(index);
 	}
+
+    auto Filter::getParam(std::string & paramName) -> Parameter * {
+        for (auto & param : params) {
+            if (Util::stringEqual(paramName, param.name)) return &param;
+        }
+        return nullptr;
+    }
 }
 

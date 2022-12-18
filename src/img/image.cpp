@@ -15,7 +15,7 @@ namespace FPP {
 	Image::Image(u32 width, u32 height, u32* pixels)
 		: width(width), height(height), pixels(pixels) {}
 
-	Image::Image(Image&& other) : width(other.width), height(other.height), pixels(other.pixels) {
+	Image::Image(Image&& other) noexcept : width(other.width), height(other.height), pixels(other.pixels) {
 		other.pixels = nullptr;
 	}
 
@@ -168,23 +168,25 @@ namespace FPP {
 		jpeg_destroy_decompress(&cinfo);
 		fclose(file);
 
-		return Image(width, height, pixels);
+		return { width, height, pixels };
 	}
 
 	auto Image::makeSheet(u32 width, u32 height) -> Image {
-		return Image(width, height, new u32[static_cast<unsigned long long>(width) * height]());
+		return { width, height, new u32[static_cast<unsigned long long>(width) * height]() };
 	}
 
 	auto Image::makeEmpty() -> Image {
-		return Image(0, 0, nullptr);
+		return { 0, 0, nullptr };
 	}
 
-	auto Image::resize(u32 width, u32 height) -> void {
+	auto Image::resize(u32 width, u32 height) -> u32 * {
 		delete[] pixels;
 		this->pixels = new u32[width * height];
 
 		this->width = width;
 		this->height = height;
+
+        return this->pixels;
 	}
 
 	auto Image::getWidth() const -> u32 {
