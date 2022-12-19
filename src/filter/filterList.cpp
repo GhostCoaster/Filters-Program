@@ -20,6 +20,7 @@ namespace FPP {
         list.push_back(std::move(noiseScaleFilter()));
         list.push_back(std::move(cutFilter()));
         list.push_back(std::move(sortFilter()));
+        list.push_back(std::move(puzzleFilter()));
     }
 
     auto FilterList::getFilter(std::string & name) -> Filter * {

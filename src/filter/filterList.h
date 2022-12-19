@@ -7,7 +7,6 @@
 
 #include "filter.h"
 
-
 namespace FPP {
     class FilterList {
     public:

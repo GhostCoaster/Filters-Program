@@ -27,6 +27,8 @@ namespace FPP {
 	extern auto cutFilter() -> Filter;
 
 	extern auto sortFilter() -> Filter;
+
+    extern auto puzzleFilter() -> Filter;
 }
 
 #endif //FILTERS_PROGRAM_FILTERS_H
