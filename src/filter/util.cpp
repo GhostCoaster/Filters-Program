@@ -29,7 +29,7 @@ namespace FPP::Util {
 	}
 
 	auto pix(const u32 pixel) -> channelReturn {
-		return channelReturn{
+		return channelReturn {
 			red(pixel),
 			gre(pixel),
 			blu(pixel),
@@ -119,6 +119,10 @@ namespace FPP::Util {
 		if (x > width) x = width;
 		return x;
 	}
+
+    auto bounds(int x, u32 width) -> int {
+        return std::max(0, std::min(x, (int)width - 1));
+    }
 
 	auto matchSize(Image** imageFrom, Image** imageTo) -> void {
 		(*imageTo)->resize((*imageFrom)->getWidth(), (*imageFrom)->getHeight());

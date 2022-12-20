@@ -52,6 +52,7 @@ namespace FPP {
 
 		extern auto smallBound(int) -> int;
 		extern auto largeBound(int, u32) -> int;
+        extern auto bounds(int, u32) -> int;
 
 		extern auto matchSize(Image**, Image**) -> void;
 

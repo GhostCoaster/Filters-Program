@@ -21,6 +21,9 @@ namespace FPP {
         list.push_back(std::move(cutFilter()));
         list.push_back(std::move(sortFilter()));
         list.push_back(std::move(puzzleFilter()));
+        list.push_back(std::move(splatterFilter()));
+        list.push_back(std::move(smoothSplatterFilter()));
+        list.push_back(std::move(glowFilter()));
     }
 
     auto FilterList::getFilter(std::string & name) -> Filter * {

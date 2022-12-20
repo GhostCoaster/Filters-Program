@@ -29,6 +29,12 @@ namespace FPP {
 	extern auto sortFilter() -> Filter;
 
     extern auto puzzleFilter() -> Filter;
+
+    extern auto splatterFilter() -> Filter;
+
+    extern auto smoothSplatterFilter() -> Filter;
+
+    extern auto glowFilter() -> Filter;
 }
 
 #endif //FILTERS_PROGRAM_FILTERS_H

@@ -33,7 +33,7 @@ add_executable( Filters_Program
 	src/filter/filterList.cpp
 	src/help.h
 	src/help.cpp
-        src/filter/filters/puzzle.cpp)
+        src/filter/filters/puzzle.cpp src/filter/filters/splatter.cpp src/filter/filters/smoothsplatter.cpp src/filter/filters/glow.cpp)
 
 set_target_properties(Filters_Program PROPERTIES OUTPUT_NAME "fpp")
 
